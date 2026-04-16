@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { Loader2, Trash2, Plus, Image as ImageIcon } from "lucide-react";
 
 type GalleryItem = {
@@ -87,7 +88,7 @@ export default function GalleryDashboard() {
                 {items.map(item => (
                     <div key={item.id} className="group relative bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md">
                         <div className="aspect-square bg-gray-100 relative">
-                            <img src={item.url} alt={item.title} className="w-full h-full object-cover" />
+                            <Image src={item.url} alt={item.title || "Gallery image"} fill className="object-cover" />
                             <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                 <button
                                     onClick={() => handleDelete(item.id)}

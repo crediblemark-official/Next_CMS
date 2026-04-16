@@ -3,8 +3,12 @@ import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { getProduct } from "../../../../lib/get-product";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowLeft, Check, Truck, ShieldCheck } from "lucide-react";
+import { serializeProduct } from "../../../../lib/serialize";
 import AddToCartButton from "../../../../components/shop/AddToCartButton";
+import { getPaymentSettings } from "../../../../lib/settings";
+import { formatPrice } from "../../../../lib/currency";
 
 export async function generateMetadata({
     params,
@@ -34,9 +38,15 @@ export default async function ProductDetailPage({
     const { slug } = await params;
     const product = await getProduct(slug);
 
+    const paymentSettings = await getPaymentSettings();
+    const currency = paymentSettings.currency || "USD";
+
     if (!product || product.isArchived) {
         return notFound();
     }
+
+    // Serialize product for Client Component
+    const serializedProduct = serializeProduct(product);
 
     return (
         <div className="min-h-screen bg-white pb-20">
@@ -54,12 +64,14 @@ export default async function ProductDetailPage({
             <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
                 {/* Left Column: Gallery */}
                 <div>
-                    <div className="bg-gray-50 rounded-2xl overflow-hidden aspect-square border border-gray-100 mb-6">
+                    <div className="bg-gray-50 rounded-2xl overflow-hidden aspect-square border border-gray-100 mb-6 relative">
                         {product.images && product.images[0] ? (
-                            <img
+                            <Image
                                 src={product.images[0]}
                                 alt={product.name}
-                                className="w-full h-full object-cover"
+                                fill
+                                className="object-cover"
+                                priority
                             />
                         ) : (
                             <div className="w-full h-full flex items-center justify-center text-gray-300">
@@ -71,8 +83,8 @@ export default async function ProductDetailPage({
                     {product.images && product.images.length > 1 && (
                         <div className="grid grid-cols-4 gap-4">
                             {product.images.slice(1).map((img: string, idx: number) => (
-                                <div key={idx} className="aspect-square bg-gray-50 rounded-xl overflow-hidden border border-gray-100 cursor-pointer hover:ring-2 ring-emerald-500 transition-all">
-                                    <img src={img} alt={`${product.name} ${idx}`} className="w-full h-full object-cover" />
+                                <div key={idx} className="aspect-square bg-gray-50 rounded-xl overflow-hidden border border-gray-100 cursor-pointer hover:ring-2 ring-emerald-500 transition-all relative">
+                                    <Image src={img} alt={`${product.name} ${idx}`} fill className="object-cover" />
                                 </div>
                             ))}
                         </div>
@@ -82,7 +94,7 @@ export default async function ProductDetailPage({
                 {/* Right Column: Product Info */}
                 <div>
                     <h1 className="text-4xl font-extrabold text-gray-900 mb-4">{product.name}</h1>
-                    <div className="text-3xl font-bold text-emerald-600 mb-6 font-mono">${product.price.toString()}</div>
+                    <div className="text-3xl font-bold text-emerald-600 mb-6 font-mono">{formatPrice(product.price, currency)}</div>
 
                     <div className="prose prose-gray mb-8 text-gray-600">
                         <p>{product.description}</p>
@@ -99,7 +111,7 @@ export default async function ProductDetailPage({
                             )}
                         </div>
 
-                        <AddToCartButton product={product} />
+                        <AddToCartButton product={serializedProduct} />
                         <p className="text-center text-xs text-gray-400 mt-3">Secure checkout powered by Stripe (Mock)</p>
                     </div>
 

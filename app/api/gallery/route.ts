@@ -1,8 +1,17 @@
 
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { z } from "zod";
 
-export async function GET(req: Request) {
+const galleryItemSchema = z.object({
+    title: z.string().optional(),
+    url: z.string().url("Invalid image URL"),
+    description: z.string().optional(),
+});
+
+export async function GET() {
     try {
         const items = await db.galleryItem.findMany({
             orderBy: { createdAt: 'desc' }
@@ -15,29 +24,40 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
     try {
-        const body = await req.json();
-        const { title, url, description } = body;
+        const session = await getServerSession(authOptions);
+        if (!session || !['admin', 'editor'].includes(session.user.role)) {
+            return new NextResponse("Unauthorized", { status: 401 });
+        }
 
-        if (!url) {
-            return new NextResponse("URL is required", { status: 400 });
+        const body = await req.json();
+        
+        // Validate with Zod
+        const validation = galleryItemSchema.safeParse(body);
+        if (!validation.success) {
+            return NextResponse.json({ 
+                error: "Validation failed", 
+                details: validation.error.format() 
+            }, { status: 400 });
         }
 
         const newItem = await db.galleryItem.create({
-            data: {
-                title,
-                url,
-                description,
-            }
+            data: validation.data
         });
 
         return NextResponse.json(newItem);
     } catch (error) {
+        console.error("Gallery create error:", error);
         return new NextResponse("Internal Error", { status: 500 });
     }
 }
 
 export async function DELETE(req: Request) {
     try {
+        const session = await getServerSession(authOptions);
+        if (!session || !['admin', 'editor'].includes(session.user.role)) {
+            return new NextResponse("Unauthorized", { status: 401 });
+        }
+
         const { searchParams } = new URL(req.url);
         const id = searchParams.get("id");
 

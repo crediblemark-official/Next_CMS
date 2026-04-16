@@ -3,6 +3,7 @@ import { SliderField } from "../../fields/SliderField";
 import { ResponsiveSliderField } from "../../fields/ResponsiveSliderField";
 import { ColorPickerField } from "../../fields/ColorPickerField";
 import React, { useId } from "react";
+import Image from "next/image";
 
 export type HeroPublisherTwoProps = {
     title: string;
@@ -28,7 +29,190 @@ export type HeroPublisherTwoProps = {
     paddingBottom: { desktop?: number; tablet?: number; mobile?: number };
     gap: { desktop?: number; tablet?: number; mobile?: number };
     imageRadius: number;
-    imageWidth?: string; // Changed to string for flexibility
+    imageWidth?: string;
+    imageAspectRatio?: string;
+    imageObjectFit?: "cover" | "contain";
+    imageShadow?: "none" | "sm" | "md" | "lg" | "xl";
+    imageAlign?: "left" | "center" | "right";
+};
+
+const HeroPublisherTwoRender = ({
+    title, description, imageUrl,
+    titleSize, titleWeight, subtitleSize,
+    backgroundColor, textColor, descriptionColor, waveColor,
+    imageRadius, imageWidth = "100%",
+    imageAspectRatio = "4/3",
+    imageObjectFit = "cover",
+    imageShadow = "none",
+    imageAlign = "right",
+    gap, paddingTop, paddingBottom,
+    titleFont = 'inherit', descFont = 'inherit'
+}: HeroPublisherTwoProps) => {
+    const id = "publisher-two-" + useId().replace(/:/g, "");
+
+    // Smart scaling helper
+    const getVal = (obj: { desktop?: number; tablet?: number; mobile?: number } | undefined, key: 'desktop' | 'tablet' | 'mobile') => {
+        if (key === 'mobile' && obj && !obj.mobile && obj.desktop) {
+            return obj.desktop * 0.6; // Scale down fallback
+        }
+        if (key === 'tablet' && obj && !obj.tablet && obj.desktop) {
+            return obj.desktop * 0.8; // Scale down fallback
+        }
+        return obj?.[key] ?? obj?.desktop ?? 0;
+    };
+
+    // Handle legacy responsive object if present
+    let finalWidth = imageWidth;
+    if (typeof imageWidth === 'object') {
+        // @ts-ignore
+        finalWidth = `${imageWidth.desktop ?? 100}%`;
+    }
+
+    return (
+        <section className={id}>
+            <style dangerouslySetInnerHTML={{
+                __html: `
+            .${id} {
+                background-color: ${backgroundColor};
+                padding-top: ${getVal(paddingTop, 'desktop')}px;
+                padding-bottom: ${getVal(paddingBottom, 'desktop')}px;
+                padding-left: 20px;
+                padding-right: 20px;
+                overflow-x: hidden;
+                position: relative;
+            }
+            .${id} .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: ${getVal(gap, 'desktop')}px;
+                align-items: center;
+                position: relative;
+                z-index: 2;
+            }
+            .${id} h1 {
+                font-size: ${getVal(titleSize, 'desktop')}rem;
+                font-weight: ${titleWeight};
+                color: ${textColor};
+                line-height: 1.1;
+                margin-bottom: 1.5rem;
+                font-family: ${titleFont !== 'inherit' ? `"${titleFont}", sans-serif` : 'inherit'};
+            }
+            .${id} .description {
+                font-size: ${getVal(subtitleSize, 'desktop')}rem;
+                color: ${descriptionColor};
+                line-height: 1.6;
+                max-width: 500px;
+                font-family: ${descFont !== 'inherit' ? `"${descFont}", sans-serif` : 'inherit'};
+            }
+            .${id} .image-container {
+                 overflow: hidden;
+                 display: flex;
+                 justify-content: ${imageAlign === 'left' ? 'flex-start' : imageAlign === 'center' ? 'center' : 'flex-end'};
+            }
+            .${id} .wave-divider {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                overflow: hidden;
+                line-height: 0;
+                transform: rotate(180deg);
+                z-index: 1;
+            }
+            .${id} .wave-divider svg {
+                position: relative;
+                display: block;
+                width: calc(100% + 1.3px);
+                height: 80px;
+                transform: rotateY(180deg);
+            }
+            .${id} .wave-divider .shape-fill {
+                fill: ${waveColor};
+            }
+
+            @media (max-width: 1024px) {
+                .${id} {
+                    padding-top: ${getVal(paddingTop, 'tablet')}px;
+                    padding-bottom: ${getVal(paddingBottom, 'tablet')}px;
+                }
+                .${id} h1 {
+                    font-size: ${getVal(titleSize, 'tablet')}rem;
+                }
+                .${id} .description {
+                    font-size: ${getVal(subtitleSize, 'tablet')}rem;
+                }
+                 .${id} .container {
+                    gap: ${getVal(gap, 'tablet')}px;
+                }
+            }
+
+            @media (max-width: 768px) {
+                .${id} {
+                    padding-top: ${getVal(paddingTop, 'mobile')}px;
+                    padding-bottom: ${getVal(paddingBottom, 'mobile')}px;
+                    padding-left: 24px;
+                    padding-right: 24px;
+                }
+                .${id} .container {
+                    grid-template-columns: 1fr;
+                    gap: ${getVal(gap, 'mobile') || 40}px;
+                    text-align: center;
+                }
+                .${id} h1 {
+                    font-size: clamp(2rem, ${getVal(titleSize, 'mobile')}rem, 3rem);
+                    line-height: 1.2;
+                    word-break: break-word;
+                }
+                .${id} .description {
+                    font-size: ${getVal(subtitleSize, 'mobile')}rem;
+                    margin: 0 auto;
+                    text-align: center;
+                }
+                .${id} .image-container {
+                    justify-content: center;
+                }
+                 .${id} .wave-divider svg {
+                    height: 50px;
+                 }
+            }
+        `}} />
+            <div className="container">
+                <div>
+                    <h1>{title}</h1>
+                    <p className="description">{description}</p>
+                </div>
+
+                <div className="image-container">
+                    {imageUrl ? (
+                        <div style={{
+                            position: 'relative',
+                            width: imageWidth,
+                            aspectRatio: imageAspectRatio,
+                            borderRadius: `${imageRadius}px`,
+                            overflow: 'hidden',
+                            boxShadow: imageShadow === 'sm' ? '0 1px 2px 0 rgb(0 0 0 / 0.05)' :
+                                imageShadow === 'md' ? '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)' :
+                                    imageShadow === 'lg' ? '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)' :
+                                        imageShadow === 'xl' ? '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)' :
+                                            'none'
+                        }}>
+                            <Image src={imageUrl} alt="Publisher" fill className={imageObjectFit === 'cover' ? 'object-cover' : 'object-contain'} unoptimized />
+                        </div>
+                    ) : (
+                        <div style={{ height: '300px', width: '100%', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '4rem' }}>📚</div>
+                    )}
+                </div>
+            </div>
+
+            <div className="wave-divider">
+                <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                    <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" className="shape-fill"></path>
+                </svg>
+            </div>
+        </section>
+    );
 };
 
 export const HeroPublisherTwo: ComponentConfig<HeroPublisherTwoProps> = {
@@ -108,6 +292,45 @@ export const HeroPublisherTwo: ComponentConfig<HeroPublisherTwoProps> = {
             type: "text",
             label: "Image Width (e.g. 500px, 100%, 120%)"
         },
+        imageAspectRatio: {
+            type: "select",
+            label: "Image Aspect Ratio",
+            options: [
+                { label: "1:1 Square", value: "1/1" },
+                { label: "4:3 Classic", value: "4/3" },
+                { label: "3:4 Portrait", value: "3/4" },
+                { label: "16:9 Widescreen", value: "16/9" },
+                { label: "Auto", value: "auto" },
+            ]
+        },
+        imageObjectFit: {
+            type: "select",
+            label: "Image Object Fit",
+            options: [
+                { label: "Cover (Fill area)", value: "cover" },
+                { label: "Contain (Show all)", value: "contain" },
+            ]
+        },
+        imageShadow: {
+            type: "select",
+            label: "Image Shadow",
+            options: [
+                { label: "None", value: "none" },
+                { label: "Small", value: "sm" },
+                { label: "Medium", value: "md" },
+                { label: "Large", value: "lg" },
+                { label: "Extra Large", value: "xl" },
+            ]
+        },
+        imageAlign: {
+            type: "select",
+            label: "Image Alignment",
+            options: [
+                { label: "Left", value: "left" },
+                { label: "Center", value: "center" },
+                { label: "Right", value: "right" },
+            ]
+        },
 
         // Spacing
         gap: {
@@ -139,190 +362,14 @@ export const HeroPublisherTwo: ComponentConfig<HeroPublisherTwoProps> = {
 
         imageRadius: 0,
         imageWidth: "100%",
+        imageAspectRatio: "4/3",
+        imageObjectFit: "cover",
+        imageShadow: "none",
+        imageAlign: "right",
 
         gap: { desktop: 60 },
         paddingTop: { desktop: 100 },
         paddingBottom: { desktop: 120 },
     },
-    render: ({
-        title, description, imageUrl,
-        titleSize, titleWeight, subtitleSize,
-        backgroundColor, textColor, descriptionColor, waveColor,
-        imageRadius, imageWidth = "100%",
-        gap, paddingTop, paddingBottom,
-        titleFont = 'inherit', descFont = 'inherit'
-    }) => {
-        const id = "publisher-two-" + React.useId().replace(/:/g, "");
-
-        // Smart scaling helper
-        const getVal = (obj: { desktop?: number; tablet?: number; mobile?: number } | undefined, key: 'desktop' | 'tablet' | 'mobile') => {
-            if (key === 'mobile' && obj && !obj.mobile && obj.desktop) {
-                return obj.desktop * 0.6; // Scale down fallback
-            }
-            if (key === 'tablet' && obj && !obj.tablet && obj.desktop) {
-                return obj.desktop * 0.8; // Scale down fallback
-            }
-            return obj?.[key] ?? obj?.desktop ?? 0;
-        };
-
-        // Handle legacy responsive object if present
-        let finalWidth = imageWidth;
-        if (typeof imageWidth === 'object') {
-            // @ts-ignore
-            finalWidth = `${imageWidth.desktop ?? 100}%`;
-        }
-
-        return (
-            <section className={id}>
-                <style dangerouslySetInnerHTML={{
-                    __html: `
-                .${id} {
-                    background-color: ${backgroundColor};
-                    padding-top: ${getVal(paddingTop, 'desktop')}px;
-                    padding-bottom: ${getVal(paddingBottom, 'desktop')}px; /* Extra bottom padding for wave overlap if needed, or just visual space */
-                    padding-left: 20px;
-                    padding-right: 20px;
-                    overflow-x: hidden;
-                    position: relative;
-                }
-                .${id} .container {
-                    max-width: 1200px;
-                    margin: 0 auto;
-                    display: grid;
-                    grid-template-columns: 1fr 1fr;
-                    gap: ${getVal(gap, 'desktop')}px;
-                    align-items: center;
-                    position: relative;
-                    z-index: 2;
-                }
-                .${id} h1 {
-                    font-size: ${getVal(titleSize, 'desktop')}rem;
-                    font-weight: ${titleWeight};
-                    color: ${textColor};
-                    line-height: 1.1;
-                    margin-bottom: 1.5rem;
-                    font-family: ${titleFont !== 'inherit' ? `"${titleFont}", sans-serif` : 'inherit'};
-                }
-                .${id} .description {
-                    font-size: ${getVal(subtitleSize, 'desktop')}rem;
-                    color: ${descriptionColor};
-                    line-height: 1.6;
-                    max-width: 500px;
-                    font-family: ${descFont !== 'inherit' ? `"${descFont}", sans-serif` : 'inherit'};
-                }
-                .${id} .image-container {
-                     overflow: hidden;
-                     display: flex;
-                     justify-content: flex-end;
-                }
-                .${id} img {
-                    width: ${finalWidth};
-                    height: auto;
-                    border-radius: ${imageRadius}px;
-                }
-                .${id} .wave-divider {
-                    position: absolute;
-                    bottom: 0;
-                    left: 0;
-                    width: 100%;
-                    overflow: hidden;
-                    line-height: 0;
-                    transform: rotate(180deg);
-                    z-index: 1;
-                }
-                .${id} .wave-divider svg {
-                    position: relative;
-                    display: block;
-                    width: calc(100% + 1.3px);
-                    height: 80px;
-                    transform: rotateY(180deg);
-                }
-                .${id} .wave-divider .shape-fill {
-                    fill: ${waveColor};
-                }
-
-                @media (max-width: 1024px) {
-                    .${id} {
-                        padding-top: ${getVal(paddingTop, 'tablet')}px;
-                        padding-bottom: ${getVal(paddingBottom, 'tablet')}px;
-                    }
-                    .${id} h1 {
-                        font-size: ${getVal(titleSize, 'tablet')}rem;
-                    }
-                    .${id} .description {
-                        font-size: ${getVal(subtitleSize, 'tablet')}rem;
-                    }
-                     .${id} .container {
-                        gap: ${getVal(gap, 'tablet')}px;
-                    }
-                }
-
-                @media (max-width: 768px) {
-                    .${id} {
-                        padding-top: ${getVal(paddingTop, 'mobile')}px;
-                        padding-bottom: ${getVal(paddingBottom, 'mobile')}px;
-                        padding-left: 24px;
-                        padding-right: 24px;
-                    }
-                    .${id} .container {
-                        grid-template-columns: 1fr;
-                        gap: ${getVal(gap, 'mobile') || 40}px;
-                        text-align: center;
-                    }
-                    .${id} h1 {
-                        font-size: clamp(2rem, ${getVal(titleSize, 'mobile')}rem, 3rem);
-                        line-height: 1.2;
-                        word-break: break-word;
-                    }
-                    .${id} .description {
-                        font-size: ${getVal(subtitleSize, 'mobile')}rem;
-                        margin: 0 auto;
-                        text-align: center;
-                    }
-                    .${id} .image-container {
-                        justify-content: center;
-                    }
-                    .${id} img {
-                        width: 100%; /* Default to full width on mobile unless overridden by inline style if we wanted, but let's keep it safe */
-                        max-width: ${finalWidth}; /* Respect the setting as max-width on mobile? Or just apply it directly? Applying directly might break mobile. */
-                        /* Let's actally just apply finalWidth, assuming user knows what they are doing, OR default directly. 
-                           If user sets 500px, on mobile 500px is too big.
-                           SAFE BET: max-width: 100%; on mobile always. width: finalWidth.
-                        */
-                        width: ${finalWidth};
-                        max-width: 100%;
-                    }
-                     /* Image top or bottom? User image shows text Left, Image Right. 
-                        Usually mobile puts Image First or Text First.
-                        If "Promo", Text First is often better. Let's keep Text First (default grid order)
-                        But I will add order shift if needed. Let's stick to default (Text top) as it's 'Bukumu Segera Terbit!' which is a hook.
-                     */
-                     .${id} .wave-divider svg {
-                        height: 50px;
-                     }
-                }
-            `}} />
-                <div className="container">
-                    <div>
-                        <h1>{title}</h1>
-                        <p className="description">{description}</p>
-                    </div>
-
-                    <div className="image-container">
-                        {imageUrl ? (
-                            <img src={imageUrl} alt="Publisher" />
-                        ) : (
-                            <div style={{ height: '300px', width: '100%', background: 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '4rem' }}>📚</div>
-                        )}
-                    </div>
-                </div>
-
-                <div className="wave-divider">
-                    <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
-                        <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" className="shape-fill"></path>
-                    </svg>
-                </div>
-            </section>
-        )
-    },
+    render: (props) => <HeroPublisherTwoRender {...props} />,
 };

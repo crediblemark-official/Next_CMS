@@ -32,6 +32,312 @@ export type PricingSimpleProps = {
     }[];
 };
 
+const PricingCard = ({ item, primaryColor, activeTextColor, bodyFont, isHorizontal, cardBg, textColor }: { item: any; primaryColor: string; activeTextColor: string; bodyFont?: string; isHorizontal: boolean; cardBg?: string; textColor?: string }) => {
+    const ButtonComponent = item.buttonUrl ? 'a' : 'button';
+    const buttonProps = item.buttonUrl ? { href: item.buttonUrl } : {};
+
+    return (
+        <div
+            className="pricing-card"
+            style={{
+                backgroundColor: cardBg || 'white',
+                borderRadius: '20px',
+                padding: '2em',
+                textAlign: 'center',
+                boxShadow: item.highlightLabel ? `0 20px 40px ${primaryColor}40` : '0 4px 6px rgba(0,0,0,0.05)',
+                border: item.highlightLabel ? `2px solid ${primaryColor}` : '2px solid #f1f5f9',
+                fontFamily: bodyFont !== 'inherit' ? `"${bodyFont}", sans-serif` : 'inherit',
+                fontSize: 'var(--card-font-size, 16px)',
+                transition: 'transform 0.3s, box-shadow 0.3s, border-color 0.3s',
+                cursor: 'default',
+                position: 'relative',
+                zIndex: item.highlightLabel ? 2 : 1,
+                overflow: 'visible',
+                marginTop: item.highlightLabel ? '0' : '20px',
+                ...(isHorizontal && {
+                    flexShrink: 0,
+                    width: 'clamp(260px, 35vw, 350px)',
+                    scrollSnapAlign: 'start',
+                }),
+            }}
+            onMouseOver={(e) => {
+                e.currentTarget.style.transform = 'translateY(-8px)';
+                if (!item.highlightLabel) {
+                    e.currentTarget.style.boxShadow = `0 20px 40px ${primaryColor}33`; // 20% opacity
+                    e.currentTarget.style.borderColor = primaryColor;
+                }
+            }}
+            onMouseOut={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                if (!item.highlightLabel) {
+                    e.currentTarget.style.boxShadow = '0 4px 6px rgba(0,0,0,0.05)';
+                    e.currentTarget.style.borderColor = '#f1f5f9';
+                }
+            }}
+        >
+            {item.highlightLabel && (
+                <div style={{
+                    position: 'absolute',
+                    top: '-16px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    backgroundColor: primaryColor,
+                    color: 'white',
+                    padding: '0.4em 1em',
+                    borderRadius: '999px',
+                    fontSize: '0.85em',
+                    fontWeight: '700',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    whiteSpace: 'nowrap',
+                    boxShadow: `0 4px 6px ${primaryColor}4D`
+                }}>
+                    {item.highlightLabel}
+                </div>
+            )}
+
+            <div style={{
+                position: 'absolute',
+                top: 0,
+                right: 0,
+                width: '100px',
+                height: '100px',
+                background: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryColor}99 100%)`,
+                opacity: 0.05,
+                borderRadius: '0 0 0 100%',
+                pointerEvents: 'none'
+            }} />
+
+            <h3 style={{
+                fontSize: '1.5em',
+                marginBottom: '0.5rem',
+                color: primaryColor,
+                fontWeight: '700',
+            }}>
+                {item.name}
+            </h3>
+
+            {item.subtitle && (
+                <div style={{
+                    color: activeTextColor,
+                    fontSize: '0.95em',
+                    marginBottom: '1.5em',
+                    fontWeight: '500'
+                }}>
+                    {item.subtitle}
+                </div>
+            )}
+
+            <div style={{ marginBottom: '2rem' }}>
+                {item.pricePrefix && (
+                    <div style={{ fontSize: '0.9em', color: activeTextColor, opacity: 0.8, marginBottom: '4px' }}>
+                        {item.pricePrefix}
+                    </div>
+                )}
+                <div style={{
+                    fontSize: '2.5em',
+                    fontWeight: '800',
+                    background: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryColor}CC 100%)`,
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                    lineHeight: 1
+                }}>
+                    {item.price}
+                </div>
+                {item.priceSuffix && (
+                    <div style={{ fontSize: '0.9em', color: activeTextColor, marginTop: '4px', fontWeight: '500' }}>
+                        {item.priceSuffix}
+                    </div>
+                )}
+            </div>
+
+            <ul style={{
+                listStyle: 'none',
+                padding: 0,
+                textAlign: 'left',
+                marginBottom: '2rem',
+            }}>
+                {(item.features || []).map((f: any, j: number) => {
+                    const isAvailable = f.available !== false;
+                    return (
+                        <li
+                            key={j}
+                            style={{
+                                padding: '12px 0',
+                                borderBottom: j < item.features.length - 1 ? '1px solid #f1f5f9' : 'none',
+                                color: isAvailable ? activeTextColor : (textColor ? textColor : '#94a3b8'),
+                                opacity: isAvailable ? 1 : 0.6,
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '10px',
+                                fontSize: '0.95em',
+                            }}
+                        >
+                            <span style={{
+                                color: isAvailable ? primaryColor : (textColor || '#94a3b8'),
+                                fontSize: '1.2em',
+                                flexShrink: 0,
+                                fontWeight: 'bold'
+                            }}>
+                                {isAvailable ? '✓' : '✕'}
+                            </span>
+                            <span>{f.feature}</span>
+                        </li>
+                    );
+                })}
+            </ul>
+
+            <div>
+                <ButtonComponent
+                    {...buttonProps as any}
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        boxSizing: 'border-box',
+                        width: '100%',
+                        padding: '14px',
+                        minHeight: '48px',
+                        backgroundColor: item.highlightLabel ? primaryColor : '#ffffff',
+                        color: item.highlightLabel ? 'white' : primaryColor,
+                        border: `2px solid ${primaryColor}`,
+                        borderRadius: '9999px',
+                        fontWeight: '700',
+                        fontSize: '1em',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                        textDecoration: 'none',
+                        boxShadow: item.highlightLabel ? `0 4px 6px ${primaryColor}33` : 'none'
+                    }}
+                    onMouseOver={(e) => {
+                        e.currentTarget.style.backgroundColor = primaryColor;
+                        e.currentTarget.style.borderColor = primaryColor;
+                        e.currentTarget.style.color = 'white';
+                    }}
+                    onMouseOut={(e) => {
+                        e.currentTarget.style.backgroundColor = item.highlightLabel ? primaryColor : '#ffffff';
+                        e.currentTarget.style.borderColor = primaryColor;
+                        e.currentTarget.style.color = item.highlightLabel ? 'white' : primaryColor;
+                    }}
+                >
+                    {item.buttonText || "Pilih Paket"}
+                </ButtonComponent>
+                {item.buttonDesc && (
+                    <div style={{
+                        marginTop: '12px',
+                        fontSize: '0.8em',
+                        color: activeTextColor,
+                        fontStyle: 'italic'
+                    }}>
+                        {item.buttonDesc}
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
+
+const PricingSimpleRender = ({ title, scrollMode, columnsDesktop, columnsTablet, columnsMobile, items, titleFont = 'inherit', bodyFont = 'inherit', mainColor, gap, cardFontSize, sectionBg, cardBg, titleColor, textColor }: PricingSimpleProps) => {
+    const id = "simple-pricing-" + useId().replace(/:/g, "");
+    const isHorizontal = scrollMode === "horizontal";
+    const primaryColor = mainColor || '#dc2626'; // Default red
+    const defaultTextColor = '#64748b';
+    const activeTextColor = textColor || defaultTextColor;
+
+    return (
+        <section className={id} style={{ padding: 'clamp(50px, 8vw, 80px) 20px', backgroundColor: sectionBg || '#f8fafc' }} >
+            <style dangerouslySetInnerHTML={{
+                __html: `
+                .${id} {
+                    --gap-desktop: ${gap?.desktop || 28}px;
+                    --gap-tablet: ${gap?.tablet || 24}px;
+                    --gap-mobile: ${gap?.mobile || 16}px;
+                    
+                    --font-desktop: ${cardFontSize?.desktop || 16}px;
+                    --font-tablet: ${cardFontSize?.tablet || 16}px;
+                    --font-mobile: ${cardFontSize?.mobile || 16}px;
+
+                    --gap: var(--gap-desktop);
+                    --card-font-size: var(--font-desktop);
+                }
+                .${id} .grid-container {
+                    display: grid;
+                    grid-template-columns: repeat(${columnsDesktop || 3}, 1fr);
+                    gap: var(--gap);
+                }
+                @media (max-width: 1024px) {
+                    .${id} { 
+                        --gap: var(--gap-tablet);
+                        --card-font-size: var(--font-tablet);
+                    }
+                    .${id} .grid-container {
+                        grid-template-columns: repeat(${columnsTablet || 2}, 1fr);
+                    }
+                }
+                @media (max-width: 768px) {
+                    .${id} { 
+                        --gap: var(--gap-mobile);
+                        --card-font-size: var(--font-mobile);
+                    }
+                    .${id} .grid-container {
+                        grid-template-columns: repeat(${columnsMobile || 1}, 1fr);
+                    }
+                }
+            `}} />
+
+            <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+                <h2 style={{
+                    textAlign: 'center',
+                    fontSize: 'clamp(1.75rem, 5vw, 3rem)',
+                    marginBottom: '1rem',
+                    fontWeight: '800',
+                    color: titleColor || '#1e293b',
+                    fontFamily: titleFont !== 'inherit' ? `"${titleFont}", sans-serif` : 'inherit'
+                }}>
+                    {title}
+                </h2>
+                <p style={{
+                    textAlign: 'center',
+                    color: activeTextColor,
+                    marginBottom: 'clamp(2.5rem, 5vw, 4rem)',
+                    fontSize: 'clamp(1rem, 2vw, 1.1rem)',
+                }}>
+                    Pilih paket yang sesuai dengan kebutuhan Anda
+                </p>
+
+                {isHorizontal ? (
+                    <div style={{
+                        overflowX: 'auto',
+                        overflowY: 'visible',
+                        scrollSnapType: 'x mandatory',
+                        WebkitOverflowScrolling: 'touch',
+                        scrollbarWidth: 'thin',
+                        paddingBottom: '20px',
+                        marginLeft: '-20px',
+                        marginRight: '-20px',
+                        paddingLeft: '20px',
+                        paddingRight: '20px',
+                    }}>
+                        <div style={{
+                            display: 'flex',
+                            gap: 'var(--gap)',
+                            minWidth: 'min-content',
+                            paddingTop: '20px',
+                        }}>
+                            {items.map((item, i) => <PricingCard key={i} item={item} primaryColor={primaryColor} activeTextColor={activeTextColor} bodyFont={bodyFont} isHorizontal={isHorizontal} cardBg={cardBg} textColor={textColor} />)}
+                        </div>
+                    </div>
+                ) : (
+                    <div className="grid-container">
+                        {items.map((item, i) => <PricingCard key={i} item={item} primaryColor={primaryColor} activeTextColor={activeTextColor} bodyFont={bodyFont} isHorizontal={isHorizontal} cardBg={cardBg} textColor={textColor} />)}
+                    </div>
+                )}
+            </div>
+        </section >
+    );
+};
+
 export const PricingSimple: ComponentConfig<PricingSimpleProps> = {
     label: "Pricing Simple",
     fields: {
@@ -167,311 +473,5 @@ export const PricingSimple: ComponentConfig<PricingSimpleProps> = {
             },
         ],
     },
-    render: ({ title, scrollMode, columnsDesktop, columnsTablet, columnsMobile, items, titleFont = 'inherit', bodyFont = 'inherit', mainColor, gap, cardFontSize, sectionBg, cardBg, titleColor, textColor }) => {
-        const id = "simple-pricing-" + useId().replace(/:/g, "");
-        const isHorizontal = scrollMode === "horizontal";
-        const primaryColor = mainColor || '#dc2626'; // Default red
-        const defaultTextColor = '#64748b';
-        const activeTextColor = textColor || defaultTextColor;
-
-        const PricingCard = ({ item, i }: any) => {
-            const ButtonComponent = item.buttonUrl ? 'a' : 'button';
-            const buttonProps = item.buttonUrl ? { href: item.buttonUrl } : {};
-
-            return (
-                <div
-                    key={i}
-                    className="pricing-card"
-                    style={{
-                        backgroundColor: cardBg || 'white',
-                        borderRadius: '20px',
-                        padding: '2em',
-                        textAlign: 'center',
-                        boxShadow: item.highlightLabel ? `0 20px 40px ${primaryColor}40` : '0 4px 6px rgba(0,0,0,0.05)',
-                        border: item.highlightLabel ? `2px solid ${primaryColor}` : '2px solid #f1f5f9',
-                        fontFamily: bodyFont !== 'inherit' ? `"${bodyFont}", sans-serif` : 'inherit',
-                        fontSize: 'var(--card-font-size, 16px)',
-                        transition: 'transform 0.3s, box-shadow 0.3s, border-color 0.3s',
-                        cursor: 'default',
-                        position: 'relative',
-                        zIndex: item.highlightLabel ? 2 : 1, // Ensure highlighted card is above
-                        overflow: 'visible',
-                        marginTop: item.highlightLabel ? '0' : '20px', // Offset for alignment
-                        ...(isHorizontal && {
-                            flexShrink: 0,
-                            width: 'clamp(260px, 35vw, 350px)',
-                            scrollSnapAlign: 'start',
-                        }),
-                    }}
-                    onMouseOver={(e) => {
-                        e.currentTarget.style.transform = 'translateY(-8px)';
-                        if (!item.highlightLabel) {
-                            e.currentTarget.style.boxShadow = `0 20px 40px ${primaryColor}33`; // 20% opacity
-                            e.currentTarget.style.borderColor = primaryColor;
-                        }
-                    }}
-                    onMouseOut={(e) => {
-                        e.currentTarget.style.transform = 'translateY(0)';
-                        if (!item.highlightLabel) {
-                            e.currentTarget.style.boxShadow = '0 4px 6px rgba(0,0,0,0.05)';
-                            e.currentTarget.style.borderColor = '#f1f5f9';
-                        }
-                    }}
-                >
-                    {/* Highlight Label Badge */}
-                    {item.highlightLabel && (
-                        <div style={{
-                            position: 'absolute',
-                            top: '-16px',
-                            left: '50%',
-                            transform: 'translateX(-50%)',
-                            backgroundColor: primaryColor,
-                            color: 'white',
-                            padding: '0.4em 1em',
-                            borderRadius: '999px',
-                            fontSize: '0.85em',
-                            fontWeight: '700',
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.05em',
-                            whiteSpace: 'nowrap',
-                            boxShadow: `0 4px 6px ${primaryColor}4D`
-                        }}>
-                            {item.highlightLabel}
-                        </div>
-                    )}
-
-                    <div style={{
-                        position: 'absolute',
-                        top: 0,
-                        right: 0,
-                        width: '100px',
-                        height: '100px',
-                        background: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryColor}99 100%)`,
-                        opacity: 0.05,
-                        borderRadius: '0 0 0 100%',
-                        pointerEvents: 'none'
-                    }} />
-
-                    <h3 style={{
-                        fontSize: '1.5em',
-                        marginBottom: '0.5rem',
-                        color: primaryColor,
-                        fontWeight: '700',
-                    }}>
-                        {item.name}
-                    </h3>
-
-                    {item.subtitle && (
-                        <div style={{
-                            color: activeTextColor,
-                            fontSize: '0.95em',
-                            marginBottom: '1.5em',
-                            fontWeight: '500'
-                        }}>
-                            {item.subtitle}
-                        </div>
-                    )}
-
-                    <div style={{ marginBottom: '2rem' }}>
-                        {item.pricePrefix && (
-                            <div style={{ fontSize: '0.9em', color: activeTextColor, opacity: 0.8, marginBottom: '4px' }}>
-                                {item.pricePrefix}
-                            </div>
-                        )}
-                        <div style={{
-                            fontSize: '2.5em',
-                            fontWeight: '800',
-                            background: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryColor}CC 100%)`,
-                            WebkitBackgroundClip: 'text',
-                            WebkitTextFillColor: 'transparent',
-                            backgroundClip: 'text',
-                            lineHeight: 1
-                        }}>
-                            {item.price}
-                        </div>
-                        {item.priceSuffix && (
-                            <div style={{ fontSize: '0.9em', color: activeTextColor, marginTop: '4px', fontWeight: '500' }}>
-                                {item.priceSuffix}
-                            </div>
-                        )}
-                    </div>
-
-                    <ul style={{
-                        listStyle: 'none',
-                        padding: 0,
-                        textAlign: 'left',
-                        marginBottom: '2rem',
-                    }}>
-                        {(item.features || []).map((f: any, j: number) => {
-                            const isAvailable = f.available !== false; // Default to true if undefined
-                            return (
-                                <li
-                                    key={j}
-                                    style={{
-                                        padding: '12px 0',
-                                        borderBottom: j < item.features.length - 1 ? '1px solid #f1f5f9' : 'none',
-                                        color: isAvailable ? activeTextColor : (textColor ? textColor : '#94a3b8'), // If unavailable, use grey unless custom text color is set (then maybe use opacity?) - actually let's just use activeTextColor but maybe opacity if unavail
-                                        opacity: isAvailable ? 1 : 0.6,
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '10px',
-                                        fontSize: '0.95em',
-                                    }}
-                                >
-                                    <span style={{
-                                        color: isAvailable ? primaryColor : (textColor || '#94a3b8'),
-                                        fontSize: '1.2em',
-                                        flexShrink: 0,
-                                        fontWeight: 'bold'
-                                    }}>
-                                        {isAvailable ? '✓' : '✕'}
-                                    </span>
-                                    <span>{f.feature}</span>
-                                </li>
-                            );
-                        })}
-                    </ul>
-
-                    <div>
-                        <ButtonComponent
-                            {...buttonProps}
-                            style={{
-                                display: 'flex', // Changed from inline-flex to flex for consistent width
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                boxSizing: 'border-box', // Ensure padding doesn't overflow width
-                                width: '100%',
-                                padding: '14px',
-                                minHeight: '48px',
-                                backgroundColor: item.highlightLabel ? primaryColor : '#ffffff',
-                                color: item.highlightLabel ? 'white' : primaryColor,
-                                border: `2px solid ${primaryColor}`,
-                                borderRadius: '9999px',
-                                fontWeight: '700',
-                                fontSize: '1em',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s',
-                                textDecoration: 'none',
-                                boxShadow: item.highlightLabel ? `0 4px 6px ${primaryColor}33` : 'none'
-                            }}
-                            onMouseOver={(e) => {
-                                e.currentTarget.style.backgroundColor = primaryColor;
-                                e.currentTarget.style.borderColor = primaryColor;
-                                e.currentTarget.style.color = 'white';
-                            }}
-                            onMouseOut={(e) => {
-                                e.currentTarget.style.backgroundColor = item.highlightLabel ? primaryColor : '#ffffff';
-                                e.currentTarget.style.borderColor = primaryColor;
-                                e.currentTarget.style.color = item.highlightLabel ? 'white' : primaryColor;
-                            }}
-                        >
-                            {item.buttonText || "Pilih Paket"}
-                        </ButtonComponent>
-                        {item.buttonDesc && (
-                            <div style={{
-                                marginTop: '12px',
-                                fontSize: '0.8em',
-                                color: activeTextColor,
-                                fontStyle: 'italic'
-                            }}>
-                                {item.buttonDesc}
-                            </div>
-                        )}
-                    </div>
-                </div>
-            );
-        };
-
-        return (
-            <section className={id} style={{ padding: 'clamp(50px, 8vw, 80px) 20px', backgroundColor: sectionBg || '#f8fafc' }} >
-                <style dangerouslySetInnerHTML={{
-                    __html: `
-                    .${id} {
-                        --gap-desktop: ${gap?.desktop || 28}px;
-                        --gap-tablet: ${gap?.tablet || 24}px;
-                        --gap-mobile: ${gap?.mobile || 16}px;
-                        
-                        --font-desktop: ${cardFontSize?.desktop || 16}px;
-                        --font-tablet: ${cardFontSize?.tablet || 16}px;
-                        --font-mobile: ${cardFontSize?.mobile || 16}px;
-
-                        --gap: var(--gap-desktop);
-                        --card-font-size: var(--font-desktop);
-                    }
-                    .${id} .grid-container {
-                        display: grid;
-                        grid-template-columns: repeat(${columnsDesktop || 3}, 1fr);
-                        gap: var(--gap);
-                    }
-                    @media (max-width: 1024px) {
-                        .${id} { 
-                            --gap: var(--gap-tablet);
-                            --card-font-size: var(--font-tablet);
-                        }
-                        .${id} .grid-container {
-                            grid-template-columns: repeat(${columnsTablet || 2}, 1fr);
-                        }
-                    }
-                    @media (max-width: 768px) {
-                        .${id} { 
-                            --gap: var(--gap-mobile);
-                            --card-font-size: var(--font-mobile);
-                        }
-                        .${id} .grid-container {
-                            grid-template-columns: repeat(${columnsMobile || 1}, 1fr);
-                        }
-                    }
-                `}} />
-
-                <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-                    <h2 style={{
-                        textAlign: 'center',
-                        fontSize: 'clamp(1.75rem, 5vw, 3rem)',
-                        marginBottom: '1rem',
-                        fontWeight: '800',
-                        color: titleColor || '#1e293b',
-                        fontFamily: titleFont !== 'inherit' ? `"${titleFont}", sans-serif` : 'inherit'
-                    }}>
-                        {title}
-                    </h2>
-                    <p style={{
-                        textAlign: 'center',
-                        color: activeTextColor,
-                        marginBottom: 'clamp(2.5rem, 5vw, 4rem)',
-                        fontSize: 'clamp(1rem, 2vw, 1.1rem)',
-                    }}>
-                        Pilih paket yang sesuai dengan kebutuhan Anda
-                    </p>
-
-                    {isHorizontal ? (
-                        <div style={{
-                            overflowX: 'auto',
-                            overflowY: 'visible',
-                            scrollSnapType: 'x mandatory',
-                            WebkitOverflowScrolling: 'touch',
-                            scrollbarWidth: 'thin',
-                            paddingBottom: '20px',
-                            marginLeft: '-20px',
-                            marginRight: '-20px',
-                            paddingLeft: '20px',
-                            paddingRight: '20px',
-                        }}>
-                            <div style={{
-                                display: 'flex',
-                                gap: 'var(--gap)',
-                                minWidth: 'min-content',
-                                paddingTop: '20px', // Space for highlight label top offset
-                            }}>
-                                {items.map((item, i) => <PricingCard key={i} item={item} i={i} />)}
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="grid-container">
-                            {items.map((item, i) => <PricingCard key={i} item={item} i={i} />)}
-                        </div>
-                    )}
-                </div>
-            </section >
-        );
-    },
+    render: (props) => <PricingSimpleRender {...props} />,
 };

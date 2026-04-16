@@ -4,6 +4,14 @@ import { Metadata } from "next";
 import Script from "next/script";
 import { getSiteSettings } from "../lib/settings";
 
+import { Inter, Lato, Montserrat, Playfair_Display, Roboto } from "next/font/google";
+
+const inter = Inter({ subsets: ["latin"], weight: ["300", "400", "500", "600", "700", "800"], variable: "--font-inter" });
+const lato = Lato({ subsets: ["latin"], weight: ["300", "400", "700", "900"], variable: "--font-lato" });
+const montserrat = Montserrat({ subsets: ["latin"], weight: ["300", "400", "500", "600", "700", "800", "900"], variable: "--font-montserrat" });
+const playfair = Playfair_Display({ subsets: ["latin"], weight: ["400", "600", "700", "800"], variable: "--font-playfair" });
+const roboto = Roboto({ subsets: ["latin"], weight: ["300", "400", "500", "700"], variable: "--font-roboto" });
+
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
@@ -64,18 +72,27 @@ export default async function RootLayout({
   };
 
   return (
-    <html lang="en">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Lato:wght@300;400;700;900&family=Montserrat:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
+    <html lang="en" className={`${inter.variable} ${lato.variable} ${montserrat.variable} ${playfair.variable} ${roboto.variable}`}>
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          :root {
+            --font-inter: ${inter.style.fontFamily};
+            --font-lato: ${lato.style.fontFamily};
+            --font-montserrat: ${montserrat.style.fontFamily};
+            --font-playfair: ${playfair.style.fontFamily};
+            --font-roboto: ${roboto.style.fontFamily};
+          }
+          body {
+            font-family: var(--font-inter), sans-serif;
+          }
+        `
+      }} />
+      <body className="min-h-screen">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-      </head>
-      <body className="min-h-screen">
         {settings.googleAnalyticsId && (
           <>
             <Script

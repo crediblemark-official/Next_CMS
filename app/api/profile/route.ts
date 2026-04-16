@@ -4,6 +4,13 @@ import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import { z } from "zod";
+
+const profileUpdateSchema = z.object({
+    name: z.string().min(1, "Name is required").optional(),
+    currentPassword: z.string().optional(),
+    newPassword: z.string().min(6, "New password must be at least 6 characters").optional(),
+});
 
 export async function PUT(req: Request) {
     try {
@@ -14,12 +21,45 @@ export async function PUT(req: Request) {
         }
 
         const body = await req.json();
-        const { name, password } = body;
+        
+        // Validate with Zod
+        const validation = profileUpdateSchema.safeParse(body);
+        if (!validation.success) {
+            return NextResponse.json({ 
+                error: "Validation failed", 
+                details: validation.error.format() 
+            }, { status: 400 });
+        }
 
-        const updateData: any = { name };
+        const { name, currentPassword, newPassword } = validation.data;
 
-        if (password) {
-            updateData.password = await bcrypt.hash(password, 10);
+        // Fetch current user with password for verification
+        const currentUser = await db.user.findUnique({
+            where: { email: session.user.email }
+        });
+
+        if (!currentUser) {
+            return new NextResponse("User not found", { status: 404 });
+        }
+
+        const updateData: any = {};
+        if (name) updateData.name = name;
+
+        // If trying to change password
+        if (newPassword) {
+            if (!currentPassword) {
+                return NextResponse.json({ error: "Current password is required to set a new one" }, { status: 400 });
+            }
+
+            // Verify current password if it exists (might be null if user registered via OAuth but now wants to set PWD)
+            if (currentUser.password) {
+                const passwordsMatch = await bcrypt.compare(currentPassword, currentUser.password);
+                if (!passwordsMatch) {
+                    return NextResponse.json({ error: "Incorrect current password" }, { status: 400 });
+                }
+            }
+
+            updateData.password = await bcrypt.hash(newPassword, 10);
         }
 
         await db.user.update({
@@ -27,7 +67,7 @@ export async function PUT(req: Request) {
             data: updateData
         });
 
-        return new NextResponse("Profile updated", { status: 200 });
+        return NextResponse.json({ success: true, message: "Profile updated successfully" });
     } catch (error) {
         console.error("[PROFILE_UPDATE]", error);
         return new NextResponse("Internal Error", { status: 500 });

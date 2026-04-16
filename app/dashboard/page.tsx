@@ -1,7 +1,10 @@
 import React from "react";
-import { FileText, ShoppingBag, Users, Eye, MessageSquare, Image, Briefcase, Plus, Settings } from "lucide-react";
+import { FileText, ShoppingBag, Users, Eye, MessageSquare, Image as ImageIcon, Briefcase, Plus, Settings } from "lucide-react";
 import Link from "next/link";
 import { db } from "@/lib/db";
+import { serializeOrders } from "@/lib/serialize";
+import { getPaymentSettings } from "@/lib/settings";
+import { formatPrice } from "@/lib/currency";
 
 async function getCounts() {
     // Parallelize queries
@@ -65,7 +68,10 @@ async function getRecentActivity() {
 
 export default async function DashboardPage() {
     const counts = await getCounts();
-    const activity = await getRecentActivity();
+    const paymentSettings = await getPaymentSettings();
+    const currency = paymentSettings.currency || "USD";
+    const { recentOrders: rawOrders, recentMessages } = await getRecentActivity();
+    const recentOrders = serializeOrders(rawOrders);
 
     // R2 Stats
     const totalStorage = 10 * 1024 * 1024 * 1024; // 10 GB
@@ -85,7 +91,7 @@ export default async function DashboardPage() {
                 <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
                         <div className="p-2 bg-orange-200 rounded-lg text-orange-700">
-                            <Image size={20} />
+                            <ImageIcon size={20} />
                         </div>
                         <h3 className="font-bold text-orange-900">File Storage</h3>
                     </div>
@@ -135,9 +141,9 @@ export default async function DashboardPage() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
                 <StatCardSmall icon={<FileText size={18} />} label="Blog Posts" value={counts.postsCount} />
                 <StatCardSmall icon={<ShoppingBag size={18} />} label="Products" value={counts.productsCount} />
-                <StatCardSmall icon={<Image size={18} />} label="Gallery" value={counts.galleryCount} />
+                <StatCardSmall icon={<ImageIcon size={18} />} label="Gallery" value={counts.galleryCount} />
                 <StatCardSmall icon={<Briefcase size={18} />} label="Portfolio" value={counts.portfolioCount} />
-                <StatCardSmall icon={<Image size={18} />} label="Media Library" value={counts.mediaCount} />
+                <StatCardSmall icon={<ImageIcon size={18} />} label="Media Library" value={counts.mediaCount} />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -146,20 +152,20 @@ export default async function DashboardPage() {
                 <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
                     <h2 className="text-lg font-bold text-gray-900 mb-4">Recent Activity</h2>
                     <div className="space-y-4">
-                        {activity.recentOrders.length === 0 && activity.recentMessages.length === 0 && (
+                        {recentOrders.length === 0 && recentMessages.length === 0 && (
                             <p className="text-gray-400 text-sm">No recent activity found.</p>
                         )}
 
-                        {activity.recentOrders.map(order => (
+                        {recentOrders.map(order => (
                             <ActivityItem
                                 key={order.id}
                                 action="New Order"
-                                target={`${order.customerName} - ${order.total}`}
+                                target={`${order.customerName} - ${formatPrice(order.total, currency)}`}
                                 time={new Date(order.createdAt).toLocaleDateString()}
                             />
                         ))}
 
-                        {activity.recentMessages.map(msg => (
+                        {recentMessages.map(msg => (
                             <ActivityItem
                                 key={msg.id}
                                 action="New Message"
@@ -176,7 +182,7 @@ export default async function DashboardPage() {
                     <div className="grid grid-cols-2 gap-4">
                         <ActionButton href="/dashboard/posts/new" label="Write Post" icon={<Plus size={16} />} />
                         <ActionButton href="/dashboard/products" label="Add Product" icon={<Plus size={16} />} />
-                        <ActionButton href="/dashboard/gallery" label="Upload Gallery" icon={<Image size={16} />} />
+                        <ActionButton href="/dashboard/gallery" label="Upload Gallery" icon={<ImageIcon size={16} />} />
                         <ActionButton href="/dashboard/settings" label="Site Settings" icon={<Settings size={16} />} />
                     </div>
                 </div>

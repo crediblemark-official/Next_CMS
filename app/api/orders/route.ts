@@ -7,25 +7,31 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
     try {
         const session = await getServerSession(authOptions);
-        if (!session?.user?.email) {
-            return new NextResponse("Unauthorized", { status: 401 });
-        }
-
         const body = await req.json();
-        const { items } = body;
+        const { items, name, email, address, city, zip } = body;
+
+        // Use session info if available, otherwise use form data
+        const customerEmail = session?.user?.email || email;
+        const customerName = session?.user?.name || name || "Guest Customer";
+        const customerAddress = address ? `${address}${city ? `, ${city}` : ""}${zip ? ` ${zip}` : ""}` : "No Address Provided";
+
+        if (!customerEmail) {
+            return new NextResponse("Email is required", { status: 400 });
+        }
 
         if (!items || items.length === 0) {
             return new NextResponse("No items in cart", { status: 400 });
         }
 
-        const total = items.reduce((acc: number, item: any) => acc + (item.price * item.quantity), 0);
+        // Calculate total safely
+        const total = items.reduce((acc: number, item: any) => acc + (Number(item.price) * item.quantity), 0);
 
         const newOrder = await db.order.create({
             data: {
-                customerName: session.user.name || "Customer",
-                customerEmail: session.user.email,
-                customerAddress: "Default Address",
-                total: total.toString(),
+                customerName,
+                customerEmail,
+                customerAddress,
+                total: total.toFixed(2),
                 status: "pending",
                 paymentStatus: "pending",
                 fulfillmentStatus: "unfulfilled",
@@ -33,7 +39,7 @@ export async function POST(req: Request) {
                     create: items.map((item: any) => ({
                         productId: item.productId,
                         quantity: item.quantity,
-                        price: item.price.toString()
+                        price: Number(item.price).toFixed(2)
                     }))
                 }
             },

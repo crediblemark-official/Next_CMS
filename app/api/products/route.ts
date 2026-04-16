@@ -4,6 +4,17 @@ import { db } from "../../../lib/db";
 
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { z } from "zod";
+
+const productSchema = z.object({
+    name: z.string().min(1, "Product name is required"),
+    slug: z.string().min(1, "Slug is required").regex(/^[a-z0-9-]+$/, "Invalid slug format"),
+    description: z.string().optional(),
+    price: z.coerce.number().positive("Price must be a positive number"),
+    stock: z.coerce.number().int().nonnegative("Stock cannot be negative").optional().default(0),
+    images: z.array(z.string()).optional().default([]),
+    productId: z.string().optional(),
+});
 
 export async function GET(req: Request) {
     try {
@@ -28,6 +39,11 @@ export async function GET(req: Request) {
 
 export async function PATCH(req: Request) {
     try {
+        const session = await getServerSession(authOptions);
+        if (!session || !['admin', 'editor'].includes(session.user.role)) {
+            return new NextResponse("Unauthorized", { status: 401 });
+        }
+
         const body = await req.json();
         const { id, isArchived } = body;
 
@@ -49,13 +65,23 @@ export async function PATCH(req: Request) {
 
 export async function POST(req: Request) {
     try {
-        const body = await req.json();
-        const { name, slug, description, price, stock, images, productId } = body;
-
-        // Validation
-        if (!name || !slug || !price) {
-            return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+        const session = await getServerSession(authOptions);
+        if (!session || !['admin', 'editor'].includes(session.user.role)) {
+            return new NextResponse("Unauthorized", { status: 401 });
         }
+
+        const body = await req.json();
+        
+        // Validate with Zod
+        const validation = productSchema.safeParse(body);
+        if (!validation.success) {
+            return NextResponse.json({ 
+                error: "Validation failed", 
+                details: validation.error.format() 
+            }, { status: 400 });
+        }
+
+        const { name, slug, description, price, stock, images, productId } = validation.data;
 
         let product;
 
@@ -68,8 +94,8 @@ export async function POST(req: Request) {
                     slug,
                     description,
                     price,
-                    stock: stock || 0,
-                    images: images || [],
+                    stock,
+                    images,
                     updatedAt: new Date()
                 }
             });
@@ -81,8 +107,8 @@ export async function POST(req: Request) {
                     slug,
                     description,
                     price,
-                    stock: stock || 0,
-                    images: images || [],
+                    stock,
+                    images,
                     updatedAt: new Date()
                 }
             });
@@ -98,6 +124,11 @@ export async function POST(req: Request) {
 
 export async function DELETE(req: Request) {
     try {
+        const session = await getServerSession(authOptions);
+        if (!session || !['admin', 'editor'].includes(session.user.role)) {
+            return new NextResponse("Unauthorized", { status: 401 });
+        }
+
         const { searchParams } = new URL(req.url);
         const productId = searchParams.get("id");
 

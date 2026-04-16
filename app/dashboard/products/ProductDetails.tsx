@@ -5,6 +5,7 @@ import { useCart } from "@/components/providers/cart-provider";
 import { useCurrency } from "@/hooks/use-currency";
 import { ShoppingCart, ArrowLeft, CheckCircle } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 
 export default function ProductDetails({ product, backUrl = "/dashboard/products" }: { product: any, backUrl?: string }) {
@@ -39,7 +40,7 @@ export default function ProductDetails({ product, backUrl = "/dashboard/products
                     <div className="bg-gray-50 p-6 md:p-10 flex flex-col items-center">
                         <div className="w-full aspect-square rounded-xl overflow-hidden bg-white shadow-sm border border-gray-100 mb-4 relative">
                             {selectedImage ? (
-                                <img src={selectedImage} alt={product.name} className="w-full h-full object-contain" />
+                                <Image src={selectedImage} alt={product.name} fill className="object-contain" unoptimized />
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center text-gray-300">No Image</div>
                             )}
@@ -50,9 +51,9 @@ export default function ProductDetails({ product, backUrl = "/dashboard/products
                                     <button
                                         key={i}
                                         onClick={() => setSelectedImage(img)}
-                                        className={`w-16 h-16 rounded-lg border-2 overflow-hidden flex-shrink-0 ${selectedImage === img ? 'border-indigo-600' : 'border-transparent'}`}
+                                        className={`w-16 h-16 rounded-lg border-2 overflow-hidden flex-shrink-0 relative ${selectedImage === img ? 'border-indigo-600' : 'border-transparent'}`}
                                     >
-                                        <img src={img} className="w-full h-full object-cover" />
+                                        <Image src={img} alt={`${product.name} thumbnail ${i}`} fill className="object-cover" unoptimized />
                                     </button>
                                 ))}
                             </div>

@@ -79,12 +79,20 @@ export default function PagesDashboard() {
                     <h1 className="text-2xl font-bold text-gray-900">Pages</h1>
                     <p className="text-gray-500 text-sm mt-1">Manage static content pages.</p>
                 </div>
-                <button
-                    onClick={createPage}
-                    className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
-                >
-                    <Plus size={18} className="mr-2" /> Create New Page
-                </button>
+                <div className="flex gap-2">
+                    <Link
+                        href="/edit"
+                        className="flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium transition-colors"
+                    >
+                        <ExternalLink size={18} className="mr-2" /> Visual Editor
+                    </Link>
+                    <button
+                        onClick={createPage}
+                        className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors"
+                    >
+                        <Plus size={18} className="mr-2" /> Create New Page
+                    </button>
+                </div>
             </div>
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
@@ -117,7 +125,7 @@ export default function PagesDashboard() {
                                         <Link href={`/dashboard/pages/editor?path=${page.path}`} className="text-indigo-600 hover:text-indigo-900" title="Edit Content">
                                             <Edit size={18} />
                                         </Link>
-                                        <a href={`/page${page.path}`} target="_blank" className="text-gray-400 hover:text-gray-600" title="View Page">
+                                        <a href={`/page${page.path}`} target="_blank" rel="noreferrer" className="text-gray-400 hover:text-gray-600" title="View Page">
                                             <ExternalLink size={18} />
                                         </a>
                                         <button onClick={() => deletePage(page.path)} className="text-red-400 hover:text-red-600" title="Delete">

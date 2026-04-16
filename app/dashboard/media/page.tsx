@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import { Trash2, Copy, Upload, Image as ImageIcon, Loader2 } from "lucide-react";
 
 type MediaItem = {
@@ -124,10 +125,11 @@ export default function MediaPage() {
                     {items.map((item) => (
                         <div key={item.id} className="group relative bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-all">
                             <div className="aspect-square bg-gray-100 relative">
-                                <img
+                                <Image
                                     src={item.url}
                                     alt={item.filename}
-                                    className="w-full h-full object-cover"
+                                    fill
+                                    className="object-cover"
                                 />
                                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                                     <button

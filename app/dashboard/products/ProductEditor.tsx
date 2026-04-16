@@ -2,11 +2,14 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { Save, ArrowLeft, Plus, X } from "lucide-react";
 import Link from "next/link";
+import { useCurrency } from "@/hooks/use-currency";
 
 export default function ProductEditor({ productId, initialData }: { productId?: string, initialData?: any }) {
     const router = useRouter();
+    const { symbol, currency } = useCurrency();
     const [isLoading, setIsLoading] = useState(false);
 
     const [name, setName] = useState(initialData?.name || "");
@@ -19,7 +22,7 @@ export default function ProductEditor({ productId, initialData }: { productId?: 
     // New Image Input State
     const [newImageUrl, setNewImageUrl] = useState("");
 
-    // Auto-generate slug
+    // Auto-generate slug and format price for IDR if needed
     useEffect(() => {
         if (!initialData?.slug && name) {
             const autoSlug = name
@@ -28,7 +31,15 @@ export default function ProductEditor({ productId, initialData }: { productId?: 
                 .replace(/^-+|-+$/g, '');
             setSlug(autoSlug);
         }
-    }, [name, initialData]);
+
+        // Clean up price for IDR upon load or currency change
+        if (currency === "IDR" && price && price.toString().includes(".")) {
+            const numericPrice = parseFloat(price.toString());
+            if (!isNaN(numericPrice)) {
+                setPrice(Math.round(numericPrice).toString());
+            }
+        }
+    }, [name, initialData, currency, price]);
 
     const addImage = () => {
         if (newImageUrl.trim()) {
@@ -149,7 +160,7 @@ export default function ProductEditor({ productId, initialData }: { productId?: 
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 {images.map((img, idx) => (
                                     <div key={idx} className="relative group rounded-lg overflow-hidden border border-gray-200 aspect-square">
-                                        <img src={img} alt={`Product ${idx}`} className="w-full h-full object-cover" />
+                                        <Image src={img} alt={`Product ${idx}`} fill className="object-cover" />
                                         <button
                                             type="button"
                                             onClick={() => removeImage(idx)}
@@ -177,14 +188,14 @@ export default function ProductEditor({ productId, initialData }: { productId?: 
                             <div>
                                 <label className="block text-xs font-medium text-gray-500 mb-1">Price</label>
                                 <div className="relative">
-                                    <span className="absolute left-3 top-2 text-gray-500">$</span>
+                                    <span className="absolute left-3 top-2 text-gray-500">{symbol}</span>
                                     <input
                                         type="number"
                                         value={price}
                                         onChange={(e) => setPrice(e.target.value)}
-                                        className="w-full pl-7 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none"
-                                        placeholder="0.00"
-                                        step="0.01"
+                                        className="w-full pl-10 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none"
+                                        placeholder={currency === "IDR" ? "0" : "0.00"}
+                                        step={currency === "IDR" ? "1" : "0.01"}
                                         required
                                     />
                                 </div>

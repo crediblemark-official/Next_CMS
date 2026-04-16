@@ -92,9 +92,9 @@ export default function DashboardShell({
     const SidebarContent = () => (
         <>
             <div className="h-16 flex items-center px-6 border-b border-gray-200 justify-between">
-                <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                <Link href="/" target="_blank" className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent hover:opacity-80 transition-opacity">
                     {siteName}
-                </span>
+                </Link>
                 {/* Close button for mobile */}
                 <button
                     onClick={() => setIsMobileMenuOpen(false)}

@@ -5,6 +5,7 @@ import { useCart } from "@/components/providers/cart-provider";
 import { useCurrency } from "@/hooks/use-currency";
 import { CreditCard, Truck, CheckCircle, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import PaymentMethodInfo from "../../../components/shop/PaymentMethodInfo";
 
@@ -57,7 +58,7 @@ export default function CheckoutPage() {
             const data = await res.json();
 
             clearCart();
-            router.push(`/checkout/success?orderId=${data.orderId}`);
+            router.push(`/checkout/success?orderId=${data.id}`);
 
         } catch (error) {
             console.error(error);
@@ -135,9 +136,9 @@ export default function CheckoutPage() {
                             <div className="space-y-4 mb-6 max-h-96 overflow-y-auto pr-2">
                                 {items.map((item) => (
                                     <div key={item.productId} className="flex gap-4 py-2 border-b border-gray-100 last:border-0">
-                                        <div className="w-16 h-16 bg-gray-50 rounded-lg overflow-hidden border border-gray-100 flex-shrink-0">
+                                        <div className="w-16 h-16 bg-gray-50 rounded-lg overflow-hidden border border-gray-100 flex-shrink-0 relative">
                                             {item.image ? (
-                                                <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                                                <Image src={item.image} alt={item.name} fill className="object-cover" unoptimized />
                                             ) : (
                                                 <div className="w-full h-full bg-gray-200" />
                                             )}

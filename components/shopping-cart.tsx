@@ -2,6 +2,7 @@
 "use client";
 
 import { X, Trash2, ShoppingBag } from "lucide-react";
+import Image from "next/image";
 import { useCart } from "./providers/cart-provider";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -70,11 +71,12 @@ export function ShoppingCart() {
                                     {items.map((item) => (
                                         <li key={item.productId} className="flex py-6">
                                             {item.image && (
-                                                <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-                                                    <img
+                                                <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200 relative">
+                                                    <Image
                                                         src={item.image}
                                                         alt={item.name}
-                                                        className="h-full w-full object-cover object-center"
+                                                        fill
+                                                        className="object-cover object-center"
                                                     />
                                                 </div>
                                             )}

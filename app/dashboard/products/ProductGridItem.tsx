@@ -2,6 +2,7 @@
 "use client";
 
 import React from 'react';
+import Image from "next/image";
 import { ShoppingCart, Check } from "lucide-react";
 import { useCart } from "@/components/providers/cart-provider";
 import { useCurrency } from "@/hooks/use-currency";
@@ -30,7 +31,7 @@ export function ProductGridItem({ product, baseUrl = "/dashboard/products" }: { 
         <div className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition-all group">
             <Link href={`${baseUrl}/${product.id}`} className="block aspect-square bg-gray-100 relative group-hover:opacity-90 transition-opacity">
                 {product.images && product.images[0] ? (
-                    <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover" />
+                    <Image src={product.images[0]} alt={product.name} fill className="object-cover" unoptimized />
                 ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-400">No Image</div>
                 )}

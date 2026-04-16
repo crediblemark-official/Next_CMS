@@ -3,6 +3,8 @@
 
 import { useState, useEffect } from "react";
 
+import { formatPrice, getCurrencySymbol } from "@/lib/currency";
+
 export function useCurrency() {
     const [currency, setCurrency] = useState("USD");
     const [loading, setLoading] = useState(true);
@@ -12,7 +14,6 @@ export function useCurrency() {
         const saved = localStorage.getItem("storeCurrency");
         if (saved) {
             setCurrency(saved);
-            setLoading(false);
         }
 
         // Fetch authoritative setting from server
@@ -28,14 +29,11 @@ export function useCurrency() {
             .finally(() => setLoading(false));
     }, []);
 
-    const formatPrice = (price: number) => {
-        return new Intl.NumberFormat("en-US", {
-            style: "currency",
-            currency: currency,
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 2
-        }).format(price);
+    const format = (price: number | string) => {
+        return formatPrice(price, currency);
     };
 
-    return { currency, formatPrice, loading };
+    const symbol = getCurrencySymbol(currency);
+
+    return { currency, formatPrice: format, symbol, loading };
 }

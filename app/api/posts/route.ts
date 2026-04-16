@@ -1,7 +1,18 @@
+
 import { NextResponse } from "next/server";
 import { db } from "../../../lib/db";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../../../lib/auth";
+import { z } from "zod";
+
+const postSchema = z.object({
+    title: z.string().min(1, "Title is required"),
+    slug: z.string().min(1, "Slug is required").regex(/^[a-z0-9-]+$/, "Invalid slug format"),
+    content: z.any().optional().default({}),
+    status: z.string().optional().default("draft"),
+    imageUrl: z.string().optional(),
+    postId: z.string().optional(),
+});
 
 export async function GET(req: Request) {
     try {
@@ -16,16 +27,24 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-    const session = await getServerSession(authOptions);
-
     try {
-        const body = await req.json();
-        const { title, slug, content, status, imageUrl, postId } = body;
-
-        // Basic validation
-        if (!title || !slug) {
-            return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+        const session = await getServerSession(authOptions);
+        if (!session || !['admin', 'editor'].includes(session.user.role)) {
+            return new NextResponse("Unauthorized", { status: 401 });
         }
+
+        const body = await req.json();
+        
+        // Validate with Zod
+        const validation = postSchema.safeParse(body);
+        if (!validation.success) {
+            return NextResponse.json({ 
+                error: "Validation failed", 
+                details: validation.error.format() 
+            }, { status: 400 });
+        }
+
+        const { title, slug, content, status, imageUrl, postId } = validation.data;
 
         let post;
 
@@ -44,40 +63,6 @@ export async function POST(req: Request) {
             });
         } else {
             // Create new
-
-            // Find admin to assign as author if session is missing (MVP fallback)
-            const defaultAdmin = await db.user.findFirst({
-                where: { role: 'admin' }
-            });
-            let authorId = (session?.user as any)?.id || defaultAdmin?.id;
-
-            if (!authorId) {
-                // Create a temp admin if none exists (Auto-seed fallback)
-                const newAdmin = await db.user.create({
-                    data: {
-                        name: "Admin User",
-                        email: "admin@example.com",
-                        role: "admin",
-                        image: `https://ui-avatars.com/api/?name=Admin+User&background=random`
-                    }
-                });
-
-                // Let's use the new admin
-                post = await db.post.create({
-                    data: {
-                        title,
-                        slug,
-                        content: content || {},
-                        imageUrl,
-                        published: status === "published",
-                        authorId: newAdmin.id,
-                        updatedAt: new Date()
-                    }
-                });
-
-                return NextResponse.json({ success: true, post });
-            }
-
             post = await db.post.create({
                 data: {
                     title,
@@ -85,7 +70,7 @@ export async function POST(req: Request) {
                     content: content || {},
                     imageUrl,
                     published: status === "published",
-                    authorId: String(authorId),
+                    authorId: session.user.id,
                     updatedAt: new Date()
                 }
             });

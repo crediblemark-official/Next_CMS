@@ -1,7 +1,19 @@
+
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { z } from "zod";
 
-export async function GET(req: Request) {
+const portfolioItemSchema = z.object({
+    title: z.string().min(1, "Title is required"),
+    category: z.string().min(1, "Category is required"),
+    imageUrl: z.string().url("Invalid image URL"),
+    link: z.string().url("Invalid link URL").optional().or(z.literal("")),
+    description: z.string().optional(),
+});
+
+export async function GET() {
     try {
         const items = await db.portfolioItem.findMany({
             orderBy: { createdAt: 'desc' }
@@ -14,31 +26,40 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
     try {
-        const body = await req.json();
-        const { title, category, imageUrl, link, description } = body;
+        const session = await getServerSession(authOptions);
+        if (!session || !['admin', 'editor'].includes(session.user.role)) {
+            return new NextResponse("Unauthorized", { status: 401 });
+        }
 
-        if (!title || !category || !imageUrl) {
-            return new NextResponse("Missing required fields", { status: 400 });
+        const body = await req.json();
+        
+        // Validate with Zod
+        const validation = portfolioItemSchema.safeParse(body);
+        if (!validation.success) {
+            return NextResponse.json({ 
+                error: "Validation failed", 
+                details: validation.error.format() 
+            }, { status: 400 });
         }
 
         const newItem = await db.portfolioItem.create({
-            data: {
-                title,
-                category,
-                imageUrl,
-                link,
-                description
-            }
+            data: validation.data
         });
 
         return NextResponse.json(newItem);
     } catch (error) {
+        console.error("Portfolio create error:", error);
         return new NextResponse("Internal Error", { status: 500 });
     }
 }
 
 export async function DELETE(req: Request) {
     try {
+        const session = await getServerSession(authOptions);
+        if (!session || !['admin', 'editor'].includes(session.user.role)) {
+            return new NextResponse("Unauthorized", { status: 401 });
+        }
+
         const { searchParams } = new URL(req.url);
         const id = searchParams.get("id");
 
@@ -49,6 +70,7 @@ export async function DELETE(req: Request) {
         });
         return NextResponse.json({ success: true });
     } catch (error) {
+        console.error("Portfolio delete error:", error);
         return new NextResponse("Internal Error", { status: 500 });
     }
 }

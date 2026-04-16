@@ -6,6 +6,7 @@ import CartDrawer from "../../components/shop/CartDrawer";
 import FloatingChat from "../../components/ui/FloatingChat";
 
 import { getSiteSettings } from "../../lib/settings";
+import { getMenu } from "../../lib/menus";
 
 export default async function SiteLayout({
     children,
@@ -13,9 +14,11 @@ export default async function SiteLayout({
     children: React.ReactNode;
 }) {
     const settings = await getSiteSettings();
+    const mainMenu = await getMenu("main");
+
     return (
         <div className="flex flex-col min-h-screen">
-            <Header initialSettings={settings} />
+            <Header initialSettings={settings} initialMenuItems={mainMenu?.items || []} />
             <main className="flex-grow">
                 {children}
             </main>

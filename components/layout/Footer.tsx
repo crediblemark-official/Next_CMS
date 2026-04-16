@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin, Eye, Share2 } from "lucide-react";
 import { SiteSettings } from "../../lib/settings";
 
@@ -59,7 +60,13 @@ export default function Footer({ initialSettings }: FooterProps) {
                     {/* Logo Area */}
                     <div className="flex-shrink-0">
                         {settings?.logoUrl ? (
-                            <img src={settings.logoUrl} alt={settings.siteName || "Logo"} className="h-12 object-contain" />
+                            <Image
+                                src={settings.logoUrl}
+                                alt={settings.siteName || "Logo"}
+                                height={48}
+                                width={192}
+                                className="h-12 w-auto object-contain"
+                            />
                         ) : (
                             <span className="text-2xl font-bold">{settings?.siteName || "Logo"}</span>
                         )}

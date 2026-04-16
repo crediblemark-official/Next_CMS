@@ -94,7 +94,7 @@ export default function TestimonialCard({ testimonial }: { testimonial: Testimon
 
                 <div className="flex-grow">
                     <p className="text-gray-600 italic mb-6 line-clamp-4 relative">
-                        <span className="text-gray-300 absolute -top-2 -left-2 text-2xl font-serif">"</span>
+                        <span className="text-gray-300 absolute -top-2 -left-2 text-2xl font-serif">&quot;</span>
                         <span className="relative z-10">{testimonial.quote}</span>
                     </p>
                 </div>

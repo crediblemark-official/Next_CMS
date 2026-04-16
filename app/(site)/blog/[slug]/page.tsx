@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { getPost } from "../../../../lib/get-post";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowLeft } from "lucide-react";
 import TiptapRenderer from "@/components/TiptapRenderer";
 
@@ -73,10 +74,12 @@ export default async function BlogPostPage({
                 <header className="mb-10">
                     {post.imageUrl && (
                         <div className="w-full h-64 md:h-96 relative mb-8 rounded-2xl overflow-hidden shadow-lg">
-                            <img
+                            <Image
                                 src={post.imageUrl}
                                 alt={post.title}
-                                className="w-full h-full object-cover"
+                                fill
+                                className="object-cover"
+                                priority
                             />
                         </div>
                     )}

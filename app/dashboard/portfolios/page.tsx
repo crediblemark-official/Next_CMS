@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { Loader2, Trash2, Plus, Briefcase } from "lucide-react";
 
 type PortfolioItem = {
@@ -91,12 +92,12 @@ export default function PortfolioDashboard() {
             <div className="grid gap-4">
                 {items.map(item => (
                     <div key={item.id} className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex gap-4 items-center">
-                        <img src={item.imageUrl} alt={item.title} className="w-24 h-16 object-cover rounded bg-gray-100" />
+                        <Image src={item.imageUrl} alt={item.title} width={96} height={64} className="w-24 h-16 object-cover rounded bg-gray-100" />
                         <div className="flex-1">
                             <h3 className="font-bold text-gray-900">{item.title}</h3>
                             <div className="flex gap-2 text-sm text-gray-500">
                                 <span className="bg-blue-50 text-blue-700 px-2 py-0.5 rounded text-xs font-medium">{item.category}</span>
-                                {item.link && <a href={item.link} target="_blank" className="hover:underline">View Link ↗</a>}
+                                {item.link && <a href={item.link} target="_blank" rel="noreferrer" className="hover:underline">View Link ↗</a>}
                             </div>
                         </div>
                         <button

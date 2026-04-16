@@ -1,9 +1,12 @@
 
 import { db } from "../../../../lib/db";
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, User, MapPin, Mail, Package, CreditCard } from "lucide-react";
 import OrderStatusManager from "./OrderStatusManager";
+import { getPaymentSettings } from "@/lib/settings";
+import { formatPrice } from "@/lib/currency";
 
 export default async function OrderDetailPage({
     params,
@@ -11,6 +14,9 @@ export default async function OrderDetailPage({
     params: Promise<{ orderId: string }>;
 }) {
     const { orderId } = await params;
+
+    const paymentSettings = await getPaymentSettings();
+    const currency = paymentSettings.currency || "USD";
 
     const order = await db.order.findUnique({
         where: { id: orderId }
@@ -59,7 +65,7 @@ export default async function OrderDetailPage({
                     </div>
                     <div className="text-right">
                         <div className="text-sm text-gray-500">Total Amount</div>
-                        <div className="text-3xl font-bold text-gray-900">${Number(order.total).toFixed(2)}</div>
+                        <div className="text-3xl font-bold text-gray-900">{formatPrice(order.total, currency)}</div>
                     </div>
                 </div>
             </div>
@@ -76,19 +82,19 @@ export default async function OrderDetailPage({
                         <ul className="divide-y divide-gray-100">
                             {formattedItems.map((item) => (
                                 <li key={item.id} className="p-6 flex items-center">
-                                    <div className="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden border border-gray-100 flex-shrink-0 mr-4">
+                                    <div className="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden border border-gray-100 flex-shrink-0 mr-4 relative">
                                         {item.productImage && item.productImage[0] ? (
-                                            <img src={item.productImage[0]} alt={item.productName || "Product"} className="w-full h-full object-cover" />
+                                            <Image src={item.productImage[0]} alt={item.productName || "Product"} fill className="object-cover" />
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-400">IMG</div>
                                         )}
                                     </div>
                                     <div className="flex-1">
                                         <h4 className="font-medium text-gray-900">{item.productName || "Unknown Product"}</h4>
-                                        <p className="text-sm text-gray-500">${Number(item.price)} x {item.quantity}</p>
+                                        <p className="text-sm text-gray-500">{formatPrice(item.price, currency)} x {item.quantity}</p>
                                     </div>
                                     <div className="font-bold text-gray-900">
-                                        ${(Number(item.price) * item.quantity).toFixed(2)}
+                                        {formatPrice(Number(item.price) * item.quantity, currency)}
                                     </div>
                                 </li>
                             ))}

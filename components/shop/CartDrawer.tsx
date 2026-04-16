@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { X, Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
 import { useCart } from "@/components/providers/cart-provider";
 import { useCurrency } from "@/hooks/use-currency";
@@ -49,7 +50,7 @@ export default function CartDrawer() {
                                 <ShoppingBag className="text-gray-400" size={32} />
                             </div>
                             <h3 className="text-lg font-medium text-gray-900">Your cart is empty</h3>
-                            <p className="text-gray-500 max-w-xs">Looks like you haven't added anything to your cart yet.</p>
+                            <p className="text-gray-500 max-w-xs">Looks like you haven&apos;t added anything to your cart yet.</p>
                             <button
                                 onClick={() => toggleCart()}
                                 className="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium transition-colors"
@@ -60,9 +61,9 @@ export default function CartDrawer() {
                     ) : (
                         items.map((item) => (
                             <div key={item.productId} className="flex gap-4">
-                                <div className="w-20 h-20 bg-gray-50 rounded-lg overflow-hidden border border-gray-100 flex-shrink-0">
+                                <div className="w-20 h-20 bg-gray-50 rounded-lg overflow-hidden border border-gray-100 flex-shrink-0 relative">
                                     {item.image ? (
-                                        <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                                        <Image src={item.image} alt={item.name} fill className="object-cover" />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center bg-gray-200">
                                             <ShoppingBag size={20} className="text-gray-400" />

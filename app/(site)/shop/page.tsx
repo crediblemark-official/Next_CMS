@@ -5,6 +5,9 @@ import { ShoppingCart } from "@/components/shopping-cart";
 
 import { Metadata } from "next";
 
+import { serializeProducts } from "@/lib/serialize";
+import { getPaymentSettings } from "@/lib/settings";
+
 export async function generateMetadata(): Promise<Metadata> {
     return {
         title: "Shop",
@@ -23,6 +26,11 @@ export default async function ShopPage() {
         orderBy: { createdAt: 'desc' }
     });
 
+    const paymentSettings = await getPaymentSettings();
+    const currency = paymentSettings.currency || "USD";
+
+    const serializedProducts = serializeProducts(allProducts);
+
     return (
         <div className="bg-white">
             {/* Header is provided by SiteLayout */}
@@ -36,7 +44,7 @@ export default async function ShopPage() {
                 </section>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                    {allProducts.map((product) => (
+                    {serializedProducts.map((product) => (
                         <ProductGridItem key={product.id} product={product} baseUrl="/shop" />
                     ))}
                 </div>

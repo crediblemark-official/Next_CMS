@@ -3,6 +3,7 @@ import { Prisma } from "@prisma/client";
 
 export type SiteSettings = Prisma.SiteSettingsGetPayload<{}>;
 export type SiteSettingsUpdate = Partial<Omit<SiteSettings, "id" | "updatedAt">>;
+export type PaymentSettings = Prisma.PaymentSettingsGetPayload<{}>;
 
 // Force TS update v4
 
@@ -34,4 +35,22 @@ export const updateSiteSettings = async (data: SiteSettingsUpdate) => {
     });
 
     return updated;
+};
+
+export const getPaymentSettings = async (): Promise<PaymentSettings> => {
+    const settings = await db.paymentSettings.findFirst();
+    if (settings) return settings;
+
+    // Create default settings if none exist
+    const newSettings = await db.paymentSettings.create({
+        data: {
+            bankName: "Example Bank",
+            accountNumber: "0000000000",
+            accountHolder: "Store Owner",
+            currency: "USD",
+            instructions: "Please include your order number in the transfer note."
+        }
+    });
+
+    return newSettings;
 };

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ShoppingBag, Menu, X } from "lucide-react";
 import { useCart } from "@/components/providers/cart-provider";
 import { SiteSettings } from "../../lib/settings";
@@ -9,12 +10,13 @@ import { SiteSettings } from "../../lib/settings";
 
 interface HeaderProps {
     initialSettings?: SiteSettings | null;
+    initialMenuItems?: any[];
 }
 
-export default function Header({ initialSettings }: HeaderProps) {
+export default function Header({ initialSettings, initialMenuItems = [] }: HeaderProps) {
     const { toggleCart, cartCount } = useCart();
     const [settings, setSettings] = useState<SiteSettings | null>(initialSettings || null);
-    const [menuItems, setMenuItems] = useState<any[]>([]);
+    const [menuItems, setMenuItems] = useState<any[]>(initialMenuItems);
 
     // Mobile Menu Toggle State
     const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -87,7 +89,13 @@ export default function Header({ initialSettings }: HeaderProps) {
                     <div className="absolute left-1/2 transform -translate-x-1/2 z-10">
                         <Link href="/" className="flex items-center gap-2">
                             {settings?.logoUrl ? (
-                                <img src={settings.logoUrl} alt={settings.siteName || "Logo"} className="h-8 w-auto object-contain" />
+                                <Image
+                                    src={settings.logoUrl}
+                                    alt={settings.siteName || "Logo"}
+                                    height={32}
+                                    width={128}
+                                    className="h-8 w-auto object-contain"
+                                />
                             ) : (
                                 <span className="text-xl font-bold tracking-tight" style={{ color: textColor }}>
                                     {settings?.siteName || "Builder"}
@@ -173,7 +181,13 @@ export default function Header({ initialSettings }: HeaderProps) {
 
                     <Link href="/" className="flex items-center gap-2">
                         {settings?.logoUrl ? (
-                            <img src={settings.logoUrl} alt={settings.siteName || "Logo"} className="h-8 w-auto object-contain" />
+                            <Image
+                                src={settings.logoUrl}
+                                alt={settings.siteName || "Logo"}
+                                height={32}
+                                width={128}
+                                className="h-8 w-auto object-contain"
+                            />
                         ) : (
                             <span className="text-xl font-bold tracking-tight" style={{ color: textColor }}>
                                 {settings?.siteName || "Builder"}

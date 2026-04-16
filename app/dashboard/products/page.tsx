@@ -7,6 +7,10 @@ import { ArchiveProductButton } from "@/components/ArchiveProductButton";
 import { db } from "../../../lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { serializeProducts } from "../../../lib/serialize";
+import { getPaymentSettings } from "@/lib/settings";
+import { formatPrice } from "@/lib/currency";
+import Image from "next/image";
 
 export default async function ProductsPage() {
     const session = await getServerSession(authOptions);
@@ -19,6 +23,11 @@ export default async function ProductsPage() {
         where: whereCondition,
         orderBy: { createdAt: 'desc' }
     });
+
+    const paymentSettings = await getPaymentSettings();
+    const currency = paymentSettings.currency || "USD";
+
+    const serializedProducts = serializeProducts(allProducts);
 
     return (
         <div>
@@ -45,7 +54,7 @@ export default async function ProductsPage() {
             {!isAdminOrEditor ? (
                 // USER VIEW: GRID
                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    {allProducts.map((product) => (
+                    {serializedProducts.map((product) => (
                         <ProductGridItem key={product.id} product={product} />
                     ))}
                 </div>
@@ -62,20 +71,22 @@ export default async function ProductsPage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
-                            {allProducts.length === 0 ? (
+                            {serializedProducts.length === 0 ? (
                                 <tr>
                                     <td colSpan={4} className="px-6 py-12 text-center text-gray-500">
                                         No products found. Start by creating one.
                                     </td>
                                 </tr>
                             ) : (
-                                allProducts.map((product) => (
+                                serializedProducts.map((product) => (
                                     <tr key={product.id} className={`hover:bg-gray-50 transition-colors group ${product.isArchived ? 'bg-gray-50/50 grayscale-[0.5]' : ''}`}>
                                         <td className="px-6 py-4">
                                             <div className="flex items-center">
                                                 {// Optional: Thumbnail
                                                     product.images && product.images[0] ? (
-                                                        <img src={product.images[0]} alt={product.name} className="w-10 h-10 rounded-md object-cover mr-3 border border-gray-200" />
+                                                        <div className="w-10 h-10 rounded-md overflow-hidden mr-3 border border-gray-200 relative">
+                                                            <Image src={product.images[0]} alt={product.name} fill className="object-cover" unoptimized />
+                                                        </div>
                                                     ) : (
                                                         <div className="w-10 h-10 rounded-md bg-gray-100 mr-3"></div>
                                                     )
@@ -94,7 +105,7 @@ export default async function ProductsPage() {
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                                            ${Number(product.price)}
+                                            {formatPrice(product.price, currency)}
                                         </td>
                                         <td className="px-6 py-4 text-sm text-gray-500">
                                             <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${(product.stock || 0) > 0 ? "bg-emerald-100 text-emerald-800" : "bg-red-100 text-red-800"

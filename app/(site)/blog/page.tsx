@@ -1,5 +1,6 @@
 import { getPosts } from "../../../lib/get-posts";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, Calendar, User } from "lucide-react";
 import { Metadata } from "next";
 
@@ -43,11 +44,12 @@ export default async function BlogIndexPage() {
                             >
                                 {/* Image */}
                                 {post.imageUrl ? (
-                                    <div className="h-48 w-full overflow-hidden bg-gray-100">
-                                        <img
+                                    <div className="h-48 w-full overflow-hidden bg-gray-100 relative">
+                                        <Image
                                             src={post.imageUrl}
                                             alt={post.title}
-                                            className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+                                            fill
+                                            className="object-cover transition-transform duration-500 hover:scale-105"
                                         />
                                     </div>
                                 ) : (

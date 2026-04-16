@@ -1,5 +1,6 @@
 
 import { db } from "@/lib/db";
+import { serializeProduct } from "@/lib/serialize";
 import ProductDetails from "@/app/dashboard/products/ProductDetails";
 
 export async function generateMetadata({ params }: { params: Promise<{ productId: string }> }) {
@@ -38,6 +39,8 @@ export default async function PublicProductPage({
         return <div className="p-20 text-center">Product not found</div>;
     }
 
+    const serializedProduct = serializeProduct(product);
+
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
     const jsonLd = {
         "@context": "https://schema.org",
@@ -65,7 +68,7 @@ export default async function PublicProductPage({
             {/* Header provided by SiteLayout */}
 
             <div className="pt-10 px-4">
-                <ProductDetails product={product} backUrl="/shop" />
+                <ProductDetails product={serializedProduct} backUrl="/shop" />
             </div>
         </main>
     );

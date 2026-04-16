@@ -1,8 +1,8 @@
-
 import type { ComponentConfig } from "@measured/puck";
 import { ColorPickerField } from "../../fields/ColorPickerField";
 import { ResponsiveSliderField, ResponsiveValue } from "../../fields/ResponsiveSliderField";
 import React, { useId } from "react";
+import Image from "next/image";
 
 export type PricingImageProps = {
     title: string;
@@ -19,6 +19,131 @@ export type PricingImageProps = {
         altText?: string;
         link?: string;
     }[];
+};
+
+const ImageCard = ({ item, isHorizontal }: { item: any; isHorizontal: boolean }) => {
+    const Wrapper = item.link ? 'a' : 'div';
+    const wrapperProps = item.link ? { href: item.link } : {};
+
+    return (
+        <Wrapper
+            {...wrapperProps as any}
+            className="pricing-image-card"
+            style={{
+                display: 'block',
+                borderRadius: '16px',
+                overflow: 'hidden',
+                cursor: item.link ? 'pointer' : 'default',
+                transition: 'transform 0.3s, box-shadow 0.3s',
+                textDecoration: 'none',
+                position: 'relative',
+                ...(isHorizontal && {
+                    flexShrink: 0,
+                    width: 'clamp(260px, 35vw, 350px)',
+                    scrollSnapAlign: 'start',
+                }),
+            }}
+            onMouseOver={(e) => {
+                if (item.link) {
+                    e.currentTarget.style.transform = 'translateY(-6px)';
+                    e.currentTarget.style.boxShadow = '0 10px 20px rgba(0,0,0,0.1)';
+                }
+            }}
+            onMouseOut={(e) => {
+                if (item.link) {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = 'none';
+                }
+            }}
+        >
+            <div style={{ position: 'relative', width: '100%', aspectRatio: '2/3' }}>
+                <Image
+                    src={item.imageUrl}
+                    alt={item.altText || "Pricing Package"}
+                    fill
+                    className="object-cover"
+                    unoptimized
+                />
+            </div>
+        </Wrapper>
+    );
+};
+
+const PricingImageRender = ({ title, scrollMode, columnsDesktop, columnsTablet, columnsMobile, items, titleFont = 'inherit', sectionBg, gap, titleColor }: PricingImageProps) => {
+    const id = "image-pricing-" + useId().replace(/:/g, "");
+    const isHorizontal = scrollMode === "horizontal";
+
+    return (
+        <section className={id} style={{ padding: 'clamp(50px, 8vw, 80px) 20px', backgroundColor: sectionBg || '#f8fafc' }} >
+            <style dangerouslySetInnerHTML={{
+                __html: `
+                .${id} {
+                    --gap-desktop: ${gap?.desktop || 28}px;
+                    --gap-tablet: ${gap?.tablet || 24}px;
+                    --gap-mobile: ${gap?.mobile || 16}px;
+                    --gap: var(--gap-desktop);
+                }
+                .${id} .grid-container {
+                    display: grid;
+                    grid-template-columns: repeat(${columnsDesktop || 3}, 1fr);
+                    gap: var(--gap);
+                }
+                @media (max-width: 1024px) {
+                    .${id} { --gap: var(--gap-tablet); }
+                    .${id} .grid-container {
+                        grid-template-columns: repeat(${columnsTablet || 2}, 1fr);
+                    }
+                }
+                @media (max-width: 768px) {
+                    .${id} { --gap: var(--gap-mobile); }
+                    .${id} .grid-container {
+                        grid-template-columns: repeat(${columnsMobile || 1}, 1fr);
+                    }
+                }
+            `}} />
+
+            <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+                <h2 style={{
+                    textAlign: 'center',
+                    fontSize: 'clamp(1.75rem, 5vw, 3rem)',
+                    marginBottom: 'clamp(2rem, 5vw, 3rem)',
+                    fontWeight: '800',
+                    color: titleColor || '#1e293b',
+                    fontFamily: titleFont !== 'inherit' ? `"${titleFont}", sans-serif` : 'inherit'
+                }}>
+                    {title}
+                </h2>
+
+                {isHorizontal ? (
+                    <div style={{
+                        overflowX: 'auto',
+                        overflowY: 'hidden',
+                        scrollSnapType: 'x mandatory',
+                        WebkitOverflowScrolling: 'touch',
+                        scrollbarWidth: 'thin',
+                        paddingBottom: '20px',
+                        marginLeft: '-20px',
+                        marginRight: '-20px',
+                        paddingLeft: '20px',
+                        paddingRight: '20px',
+                    }}>
+                        <div style={{
+                            display: 'flex',
+                            gap: 'var(--gap)',
+                            minWidth: 'min-content',
+                            padding: '10px 0'
+                        }}>
+                            {items.map((item, i) => <ImageCard key={i} item={item} isHorizontal={isHorizontal} />)}
+                        </div>
+                    </div>
+                ) : (
+                    <div className="grid-container">
+                        {items.map((item, i) => <ImageCard key={i} item={item} isHorizontal={isHorizontal} />)}
+                    </div>
+                )}
+            </div>
+        </section >
+    );
 };
 
 export const PricingImage: ComponentConfig<PricingImageProps> = {
@@ -98,129 +223,5 @@ export const PricingImage: ComponentConfig<PricingImageProps> = {
             },
         ],
     },
-    render: ({ title, scrollMode, columnsDesktop, columnsTablet, columnsMobile, items, titleFont = 'inherit', sectionBg, gap, titleColor }) => {
-        const id = "image-pricing-" + useId().replace(/:/g, "");
-        const isHorizontal = scrollMode === "horizontal";
-
-        const ImageCard = ({ item, i }: any) => {
-            const Wrapper = item.link ? 'a' : 'div';
-            const wrapperProps = item.link ? { href: item.link } : {};
-
-            return (
-                <Wrapper
-                    key={i}
-                    {...wrapperProps}
-                    className="pricing-image-card"
-                    style={{
-                        display: 'block',
-                        borderRadius: '16px',
-                        overflow: 'hidden',
-                        cursor: item.link ? 'pointer' : 'default',
-                        transition: 'transform 0.3s, box-shadow 0.3s',
-                        textDecoration: 'none',
-                        ...(isHorizontal && {
-                            flexShrink: 0,
-                            width: 'clamp(260px, 35vw, 350px)',
-                            scrollSnapAlign: 'start',
-                        }),
-                    }}
-                    onMouseOver={(e) => {
-                        if (item.link) {
-                            e.currentTarget.style.transform = 'translateY(-6px)';
-                            e.currentTarget.style.boxShadow = '0 10px 20px rgba(0,0,0,0.1)';
-                        }
-                    }}
-                    onMouseOut={(e) => {
-                        if (item.link) {
-                            e.currentTarget.style.transform = 'translateY(0)';
-                            e.currentTarget.style.boxShadow = 'none';
-                        }
-                    }}
-                >
-                    <img
-                        src={item.imageUrl}
-                        alt={item.altText || "Pricing Package"}
-                        style={{
-                            width: '100%',
-                            height: 'auto',
-                            display: 'block',
-                            objectFit: 'cover',
-                        }}
-                    />
-                </Wrapper>
-            );
-        };
-
-        return (
-            <section className={id} style={{ padding: 'clamp(50px, 8vw, 80px) 20px', backgroundColor: sectionBg || '#f8fafc' }} >
-                <style dangerouslySetInnerHTML={{
-                    __html: `
-                    .${id} {
-                        --gap-desktop: ${gap?.desktop || 28}px;
-                        --gap-tablet: ${gap?.tablet || 24}px;
-                        --gap-mobile: ${gap?.mobile || 16}px;
-                        --gap: var(--gap-desktop);
-                    }
-                    .${id} .grid-container {
-                        display: grid;
-                        grid-template-columns: repeat(${columnsDesktop || 3}, 1fr);
-                        gap: var(--gap);
-                    }
-                    @media (max-width: 1024px) {
-                        .${id} { --gap: var(--gap-tablet); }
-                        .${id} .grid-container {
-                            grid-template-columns: repeat(${columnsTablet || 2}, 1fr);
-                        }
-                    }
-                    @media (max-width: 768px) {
-                        .${id} { --gap: var(--gap-mobile); }
-                        .${id} .grid-container {
-                            grid-template-columns: repeat(${columnsMobile || 1}, 1fr);
-                        }
-                    }
-                `}} />
-
-                <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-                    <h2 style={{
-                        textAlign: 'center',
-                        fontSize: 'clamp(1.75rem, 5vw, 3rem)',
-                        marginBottom: 'clamp(2rem, 5vw, 3rem)',
-                        fontWeight: '800',
-                        color: titleColor || '#1e293b',
-                        fontFamily: titleFont !== 'inherit' ? `"${titleFont}", sans-serif` : 'inherit'
-                    }}>
-                        {title}
-                    </h2>
-
-                    {isHorizontal ? (
-                        <div style={{
-                            overflowX: 'auto',
-                            overflowY: 'hidden',
-                            scrollSnapType: 'x mandatory',
-                            WebkitOverflowScrolling: 'touch',
-                            scrollbarWidth: 'thin',
-                            paddingBottom: '20px',
-                            marginLeft: '-20px',
-                            marginRight: '-20px',
-                            paddingLeft: '20px',
-                            paddingRight: '20px',
-                        }}>
-                            <div style={{
-                                display: 'flex',
-                                gap: 'var(--gap)',
-                                minWidth: 'min-content',
-                                padding: '10px 0' // small padding for hover effects
-                            }}>
-                                {items.map((item, i) => <ImageCard key={i} item={item} i={i} />)}
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="grid-container">
-                            {items.map((item, i) => <ImageCard key={i} item={item} i={i} />)}
-                        </div>
-                    )}
-                </div>
-            </section >
-        );
-    },
+    render: (props) => <PricingImageRender {...props} />,
 };

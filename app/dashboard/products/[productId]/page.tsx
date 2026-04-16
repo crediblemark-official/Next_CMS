@@ -5,6 +5,8 @@ import ProductDetails from "../ProductDetails";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
+import { serializeProduct } from "../../../../lib/serialize";
+
 export default async function ProductPage({
     params
 }: {
@@ -22,10 +24,7 @@ export default async function ProductPage({
         });
 
         if (product) {
-            initialData = {
-                ...product,
-                price: product.price.toString()
-            };
+            initialData = serializeProduct(product);
         }
     }
 

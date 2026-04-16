@@ -3,6 +3,9 @@ import Link from "next/link";
 import { Eye, Package, Clock, CheckCircle, Truck, XCircle } from "lucide-react";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { serializeOrders } from "@/lib/serialize";
+import { getPaymentSettings } from "@/lib/settings";
+import { formatPrice } from "@/lib/currency";
 
 export const revalidate = 0; // Ensure fresh data
 
@@ -11,18 +14,23 @@ export default async function OrderListPage() {
     const userRole = session?.user?.role || "user";
     const userEmail = session?.user?.email;
 
-    let orderList;
+    const paymentSettings = await getPaymentSettings();
+    const currency = paymentSettings.currency || "USD";
+
+    let orderListRaw;
 
     if (userRole === "admin") {
-        orderList = await db.order.findMany({
+        orderListRaw = await db.order.findMany({
             orderBy: { createdAt: 'desc' }
         });
     } else {
-        orderList = await db.order.findMany({
+        orderListRaw = await db.order.findMany({
             where: { customerEmail: userEmail || "" },
             orderBy: { createdAt: 'desc' }
         });
     }
+
+    const orderList = serializeOrders(orderListRaw);
 
     const getStatusBadge = (status: string) => {
         switch (status) {
@@ -96,7 +104,7 @@ export default async function OrderListPage() {
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">
-                                        ${order.total}
+                                        {formatPrice(order.total, currency)}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <Link href={`/dashboard/orders/${order.id}`} className="text-indigo-600 hover:text-indigo-900 inline-flex items-center">

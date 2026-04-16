@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Image from "next/image";
 import { Search, Shield, User as UserIcon, Plus, Edit, Trash2 } from "lucide-react";
 import UserModal from "./UserModal";
 
@@ -133,9 +134,9 @@ export default function UsersPage() {
                                     <tr key={user.id} className="hover:bg-gray-50 transition-colors">
                                         <td className="px-6 py-4">
                                             <div className="flex items-center">
-                                                <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 mr-3 overflow-hidden">
+                                                <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 mr-3 overflow-hidden relative">
                                                     {user.image ? (
-                                                        <img src={user.image} alt={user.name || "User"} className="w-full h-full object-cover" />
+                                                        <Image src={user.image} alt={user.name || "User"} fill className="object-cover" />
                                                     ) : (
                                                         <span className="font-bold text-sm">{(user.name?.[0] || user.email?.[0] || "?").toUpperCase()}</span>
                                                     )}
