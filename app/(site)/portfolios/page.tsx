@@ -28,7 +28,7 @@ export default async function PortfoliosPage() {
                             Showcasing Our <span className="text-blue-600">Greatest Milestones</span>
                         </h1>
                         <p className="text-xl text-gray-500 leading-relaxed">
-                            A curated selection of the impactful publications and collaborative projects we've brought to life.
+                            A curated selection of the impactful publications and collaborative projects we&apos;ve brought to life.
                         </p>
                     </div>
                 </div>

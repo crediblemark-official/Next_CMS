@@ -35,7 +35,7 @@ export default async function TestimonialsPage() {
                             Verified <span className="text-blue-600">Client Stories</span>
                         </h1>
                         <p className="max-w-2xl mx-auto text-xl text-gray-500 leading-relaxed">
-                            Discover how we've helped authors, researchers, and institutions achieve their publishing goals.
+                            Discover how we&apos;ve helped authors, researchers, and institutions achieve their publishing goals.
                         </p>
                     </div>
                 </div>
@@ -67,7 +67,7 @@ export default async function TestimonialsPage() {
                                 <div className="relative flex-1 mb-8">
                                     <Quote size={24} className="absolute -top-2 -left-2 text-blue-100 -z-0 rotate-180" />
                                     <p className="text-gray-700 leading-relaxed relative z-10 italic">
-                                        "{item.quote}"
+                                        &quot;{item.quote}&quot;
                                     </p>
                                 </div>
                                 <div className="flex items-center gap-4 pt-6 border-t border-gray-50">
