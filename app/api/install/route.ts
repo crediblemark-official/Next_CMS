@@ -68,14 +68,14 @@ export async function POST(req: Request) {
             where: { id: "main_settings" },
             update: {
                 siteName: site.siteName,
-                tagline: site.tagline || "Built with Next_CMS",
+                tagline: site.tagline || "Built with Next CMS",
                 description: site.description || "A professional Next.js CMS",
                 contactEmail: admin.email,
             },
             create: {
                 id: "main_settings",
                 siteName: site.siteName,
-                tagline: site.tagline || "Built with Next_CMS",
+                tagline: site.tagline || "Built with Next CMS",
                 description: site.description || "A professional Next.js CMS",
                 contactEmail: admin.email,
                 footerCopyright: `© ${new Date().getFullYear()} ${site.siteName}. All Rights Reserved.`
@@ -125,7 +125,7 @@ export async function POST(req: Request) {
                     content: [
                         {
                             type: "paragraph",
-                            content: [{ type: "text", text: "Welcome to your new Next_CMS blog. This is your first post!" }]
+                            content: [{ type: "text", text: "Welcome to your new Next CMS blog. This is your first post!" }]
                         }
                     ]
                 },
