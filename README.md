@@ -1,4 +1,4 @@
-# Builder
+# Next CMS
 
 A powerful Next.js application for building and managing content with CredBuild. This project features a robust dashboard for page management, SEO optimization, and dynamic content rendering.
 
@@ -8,27 +8,27 @@ A powerful Next.js application for building and managing content with CredBuild.
 - **Content Management**: Dashboard to manage pages, posts, products, and more.
 - **SEO Optimized**: Built-in support for meta tags, Open Graph, Sitemap, and Robots.txt.
 - **Authentication**: Secure access for dashboard and editing routes.
-- **Database**: PostgreSQL with Drizzle ORM for efficient data management.
+- **Database**: PostgreSQL with Prisma ORM for efficient data management.
 
 ## Getting Started
 
 ### Prerequisites
 
 - Node.js 18+
-- PostgreSQL Database (e.g., Neon)
+- PostgreSQL Database
 - Cloudflare R2 (for storage)
 
 ### Installation
 
 1.  Clone the repository:
     ```bash
-    git clone <repository-url>
-    cd builder
+    git clone https://github.com/crediblemark-official/Next_CMS.git
+    cd Next_CMS
     ```
 
 2.  Install dependencies:
     ```bash
-    pnpm install
+    bun install
     ```
 
 3.  Configure Environment Variables:
@@ -42,23 +42,23 @@ A powerful Next.js application for building and managing content with CredBuild.
     R2_BUCKET_NAME="your-bucket-name"
     R2_PUBLIC_DOMAIN="https://your-r2-domain.com"
     NEXTAUTH_SECRET="your-nextauth-secret"
-    NEXTAUTH_URL="http://localhost:3000"
-    NEXT_PUBLIC_APP_URL="http://localhost:3000"
+    NEXTAUTH_URL="https://build.crediblemark.com"
+    NEXT_PUBLIC_APP_URL="https://build.crediblemark.com"
     ```
 
     > **Important**: `NEXT_PUBLIC_APP_URL` is required for SEO features (Sitemap, Robots.txt, Open Graph) to work correctly.
 
 4.  Run Database Migrations:
     ```bash
-    npx drizzle-kit push
+    npx prisma db push
     ```
 
 5.  Start the Development Server:
     ```bash
-    pnpm dev
+    bun dev
     ```
 
-    Navigate to [http://localhost:3000](http://localhost:3000).
+    Navigate to [https://build.crediblemark.com](https://build.crediblemark.com).
 
 ## Default Accounts
 | Role | Email | Password |
@@ -67,12 +67,12 @@ A powerful Next.js application for building and managing content with CredBuild.
 | **Editor** | `editor@univedpress.com` | `editor` |
 | **User** | `user@univedpress.com` | `user` |
 
-> **Note**: These accounts are created by running `npx tsx scripts/seed-user.ts`.
+> **Note**: These accounts are created by running `bun scripts/seed-user.ts`.
 
 ## Usage
 
 ### Managing Pages
-1.  Go to `http://localhost:3000/dashboard/pages`.
+1.  Go to `https://build.crediblemark.com/dashboard/pages`.
 2.  Click **Create New Page**.
 3.  Enter the Title, URL Path, content, and **SEO metadata** (Description, Image URL).
 4.  Click **Save**.
@@ -86,4 +86,4 @@ The application automatically generates:
 - **Sitemap**: `/sitemap.xml`
 - **Robots.txt**: `/robots.txt`
 
-Ensure `NEXT_PUBLIC_APP_URL` is set to your production domain (e.g., `https://example.com`) when deploying to ensure these files contain correct absolute URLs.
+Ensure `NEXT_PUBLIC_APP_URL` is set to your production domain (e.g., `https://build.crediblemark.com`) when deploying to ensure these files contain correct absolute URLs.
