@@ -32,9 +32,9 @@ Furthermore, the individual route handlers do not implement `getServerSession` c
 **Impact**: If deployed without running a password rotation, these accounts are easily compromised.
 
 ### 4. Middleware "Edit" Path Rewrite (Low/Info)
-**Location**: `middleware.ts`
-**Issue**: The logic rewrites `/.../edit` to `/puck/...`.
-**Impact**: Ensure the destination `/puck` routes are effectively protected. currently they are, but complexity in rewriting can sometimes hide bypasses.
+**Location**: `proxy.ts`
+**Issue**: The logic rewrites `/.../edit` to `/credbuild/...`.
+**Impact**: Ensure the destination `/credbuild` routes are effectively protected. currently they are, but complexity in rewriting can sometimes hide bypasses.
 
 ## Recommended Remediation Plan
 

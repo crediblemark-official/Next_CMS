@@ -1,10 +1,10 @@
 # Builder
 
-A powerful Next.js application for building and managing content with Puck. This project features a robust dashboard for page management, SEO optimization, and dynamic content rendering.
+A powerful Next.js application for building and managing content with CredBuild. This project features a robust dashboard for page management, SEO optimization, and dynamic content rendering.
 
 ## Features
 
-- **Page Builder**: Visual editing with Puck.
+- **Page Builder**: Visual editing with CredBuild.
 - **Content Management**: Dashboard to manage pages, posts, products, and more.
 - **SEO Optimized**: Built-in support for meta tags, Open Graph, Sitemap, and Robots.txt.
 - **Authentication**: Secure access for dashboard and editing routes.
@@ -79,7 +79,7 @@ A powerful Next.js application for building and managing content with Puck. This
 
 ### Editing Content
 - Use the Dashboard to manage site content.
-- Use the Puck editor (if configured) for visual page building.
+- Use the CredBuild editor (if configured) for visual page building.
 
 ## SEO Configuration
 The application automatically generates:

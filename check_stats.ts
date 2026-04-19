@@ -6,7 +6,7 @@ async function main() {
     const siteSettings = await prisma.siteSettings.count();
     const posts = await prisma.post.count();
     const products = await prisma.product.count();
-    const puckPages = await prisma.puckPage.count();
+    const credBuildPages = await prisma.credBuildPage.count();
     const users = await prisma.user.count();
     const menus = await prisma.menu.count();
 
@@ -14,7 +14,7 @@ async function main() {
     console.log(`- SiteSettings: ${siteSettings}`);
     console.log(`- Posts: ${posts}`);
     console.log(`- Products: ${products}`);
-    console.log(`- PuckPages: ${puckPages}`);
+    console.log(`- CredBuildPages: ${credBuildPages}`);
     console.log(`- Users: ${users}`);
     console.log(`- Menus: ${menus}`);
   } catch (error) {

@@ -1,13 +1,11 @@
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
 generator client {
   provider = "prisma-client-js"
 }
 
-// --- NextAuth Models ---
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
 
 model User {
   id            String    @id @default(cuid())
@@ -15,28 +13,27 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
-  password      String?
   role          String?   @default("user")
+  password      String?
   accounts      Account[]
-  sessions      Session[]
   posts         Post[]
+  sessions      Session[]
 }
 
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String? @db.Text
-  access_token       String? @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String? @db.Text
-  session_state      String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -57,21 +54,18 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-// --- CMS Models ---
-
 model Post {
   id        String   @id @default(cuid())
   title     String
   slug      String   @unique
   content   Json?
   excerpt   String?
-  imageUrl  String?
   published Boolean? @default(false)
   authorId  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  author User? @relation(fields: [authorId], references: [id])
+  imageUrl  String?
+  author    User?    @relation(fields: [authorId], references: [id])
 }
 
 model Product {
@@ -89,19 +83,6 @@ model Product {
   orderItems  OrderItem[]
 }
 
-model PuckPage {
-  id          String   @id @default(cuid())
-  path        String   @unique
-  title       String?
-  description String?
-  imageUrl    String?
-  body        String?
-  isPublished Boolean? @default(true)
-  data        Json
-  updatedAt   DateTime @updatedAt
-  createdAt   DateTime @default(now())
-}
-
 model Order {
   id                String      @id @default(cuid())
   customerName      String
@@ -109,9 +90,9 @@ model Order {
   customerAddress   String
   total             Decimal
   status            String?     @default("pending")
+  createdAt         DateTime    @default(now())
   paymentStatus     String?     @default("pending")
   fulfillmentStatus String?     @default("unfulfilled")
-  createdAt         DateTime    @default(now())
   items             OrderItem[]
 }
 
@@ -121,9 +102,8 @@ model OrderItem {
   productId String
   quantity  Int
   price     Decimal
-
-  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [id])
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id])
 }
 
 model PaymentSettings {
@@ -131,9 +111,9 @@ model PaymentSettings {
   bankName      String
   accountNumber String
   accountHolder String
-  currency      String?  @default("USD")
   instructions  String?
   updatedAt     DateTime @updatedAt
+  currency      String?  @default("USD")
 }
 
 model Testimonial {
@@ -143,21 +123,16 @@ model Testimonial {
   role       String?
   avatarUrl  String?
   rating     Int?     @default(5)
-  isApproved Boolean? @default(false)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+  isApproved Boolean? @default(false)
 }
 
 model SiteSettings {
   id                          String   @id @default(cuid())
   siteName                    String?  @default("My Awesome Site")
-  tagline                     String?
   logoUrl                     String?
   description                 String?
-  seoTitle                    String?
-  seoKeywords                 String?
-  seoImage                    String?
-  faviconUrl                  String?
   footerAddress               String?
   footerCopyright             String?
   footerAboutText             String?
@@ -168,19 +143,33 @@ model SiteSettings {
   socialWhatsapp              String?
   socialTelegram              String?
   contactEmail                String?
+  updatedAt                   DateTime @updatedAt
   brandColor                  String?  @default("#CE1111")
+  brandPrimaryColor           String?
+  brandSecondaryColor         String?
+  brandAccentColor            String?
+  brandBackgroundColor        String?
+  brandTextColor              String?
+  brandFontPrimary            String?
+  brandFontSecondary          String?
+  brandFooterText             String?
+  brandSupportEmail           String?
   headerStyle                 String?  @default("simple")
   headerBackgroundColor       String?  @default("#ffffff")
   headerTextColor             String?  @default("111827")
-  showCart                    Boolean? @default(true)
-  showFloatingChat            Boolean? @default(false)
-  whatsappNumber              String?
   headerMobileBackgroundColor String?  @default("#f9fafb")
   footerBackgroundColor       String?  @default("#CE1111")
   footerTextColor             String?  @default("#ffffff")
+  showCart                    Boolean? @default(true)
+  showFloatingChat            Boolean? @default(false)
+  whatsappNumber              String?
+  seoTitle                    String?
+  seoKeywords                 String?
+  seoImage                    String?
+  faviconUrl                  String?
   googleSiteVerificationId    String?
   googleAnalyticsId           String?
-  updatedAt                   DateTime @updatedAt
+  tagline                     String?
 }
 
 model SiteStatistics {
@@ -208,8 +197,7 @@ model MenuItem {
   target    String?  @default("_self")
   parentId  String?
   createdAt DateTime @default(now())
-
-  menu Menu @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  menu      Menu     @relation(fields: [menuId], references: [id], onDelete: Cascade)
 }
 
 model ContactSubmission {
@@ -247,4 +235,18 @@ model MediaItem {
   mimeType  String
   size      Int
   createdAt DateTime @default(now())
+}
+
+model CredBuildPage {
+  id          String   @id @default(cuid())
+  path        String   @unique
+  title       String?
+  description String?
+  imageUrl    String?
+  body        String?
+  isPublished Boolean? @default(true)
+  useBuilder  Boolean? @default(true)
+  data        Json
+  updatedAt   DateTime @updatedAt
+  createdAt   DateTime @default(now())
 }

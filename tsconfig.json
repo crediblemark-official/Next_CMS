@@ -10,6 +10,12 @@
     "paths": {
       "@/*": [
         "./*"
+      ],
+      "@credbuild/core": [
+        "./packages/core/index.ts"
+      ],
+      "@credbuild/core/*": [
+        "./packages/core/*"
       ]
     }
   },

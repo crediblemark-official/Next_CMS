@@ -2,7 +2,12 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { Trash2, Copy, Upload, Image as ImageIcon, Loader2 } from "lucide-react";
+import { Trash2, Copy, Upload, Image as ImageIcon, Loader2, Plus, ExternalLink, MessageSquare } from "lucide-react";
+import { 
+    PageHeader, 
+    CardSkeleton,
+    EmptyState
+} from "@/components/dashboard/ui/DataTable";
 
 type MediaItem = {
     id: string;
@@ -88,19 +93,18 @@ export default function MediaPage() {
     };
 
     return (
-        <div className="p-8 max-w-7xl mx-auto">
-            <div className="flex justify-between items-center mb-8">
-                <div>
-                    <h1 className="text-3xl font-bold text-gray-900">Media Library</h1>
-                    <p className="text-gray-500 mt-1">Manage your images and assets</p>
-                </div>
-                <div>
+        <div className="w-full animate-in fade-in duration-700 pb-20 px-4">
+            <PageHeader 
+                title="Media Library" 
+                subtitle="Manage and curate your digital assets."
+            >
+                <div className="w-full md:w-auto">
                     <label className={`
-                        flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition-colors
+                        inline-flex items-center justify-center gap-2 px-3 py-1.5 bg-[#2eaadc] text-white rounded cursor-pointer hover:bg-[#1a99cc] transition-colors font-bold text-xs
                         ${uploading ? "opacity-50 cursor-not-allowed" : ""}
                     `}>
-                        {uploading ? <Loader2 size={20} className="animate-spin" /> : <Upload size={20} />}
-                        {uploading ? "Uploading..." : "Upload Image"}
+                        {uploading ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
+                        {uploading ? "Uploading..." : "Upload Media"}
                         <input
                             type="file"
                             className="hidden"
@@ -110,54 +114,58 @@ export default function MediaPage() {
                         />
                     </label>
                 </div>
-            </div>
+            </PageHeader>
 
             {loading ? (
-                <div className="text-center py-20 text-gray-500">Loading library...</div>
-            ) : items.length === 0 ? (
-                <div className="text-center py-20 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
-                    <ImageIcon className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900">No media found</h3>
-                    <p className="text-gray-500">Upload your first image to get started</p>
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+                    {Array.from({ length: 12 }).map((_, i) => (
+                        <CardSkeleton key={i} />
+                    ))}
                 </div>
+            ) : items.length === 0 ? (
+                <EmptyState 
+                    icon={<ImageIcon size={32} />} 
+                    message="Your media library is currently empty. Start uploading your brand assets." 
+                />
             ) : (
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
                     {items.map((item) => (
-                        <div key={item.id} className="group relative bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-all">
-                            <div className="aspect-square bg-gray-100 relative">
+                        <div key={item.id} className="group relative bg-[#202020] rounded border border-[#2f2f2f] overflow-hidden transition-all">
+                            <div className="aspect-square bg-white/[0.02] relative overflow-hidden">
                                 <Image
                                     src={item.url}
                                     alt={item.filename}
                                     fill
-                                    className="object-cover"
+                                    sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 20vw"
+                                    className="object-cover transition-transform duration-700 group-hover:scale-105"
                                 />
-                                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                                     <button
                                         onClick={() => copyToClipboard(item.url)}
-                                        className="p-2 bg-white rounded-full hover:bg-gray-100 transition-colors"
+                                        className="w-8 h-8 flex items-center justify-center bg-white/10 hover:bg-white/20 text-white rounded transition-colors"
                                         title="Copy URL"
                                     >
-                                        <Copy size={16} className="text-gray-700" />
+                                        <Copy size={14} />
                                     </button>
                                     <button
                                         onClick={() => handleDelete(item.id)}
-                                        className="p-2 bg-white rounded-full hover:bg-red-50 transition-colors"
+                                        className="w-8 h-8 flex items-center justify-center bg-red-500/80 hover:bg-red-500 text-white rounded transition-colors"
                                         title="Delete"
                                         disabled={deletingId === item.id}
                                     >
                                         {deletingId === item.id ? (
-                                            <Loader2 size={16} className="animate-spin text-red-600" />
+                                            <Loader2 size={14} className="animate-spin" />
                                         ) : (
-                                            <Trash2 size={16} className="text-red-600" />
+                                            <Trash2 size={14} />
                                         )}
                                     </button>
                                 </div>
                             </div>
                             <div className="p-3">
-                                <p className="text-sm font-medium text-gray-900 truncate" title={item.filename}>
+                                <p className="text-[11px] font-medium text-white truncate" title={item.filename}>
                                     {item.filename}
                                 </p>
-                                <p className="text-xs text-gray-500 mt-1">
+                                <p className="text-[9px] text-white font-medium">
                                     {(item.size / 1024).toFixed(1)} KB
                                 </p>
                             </div>
