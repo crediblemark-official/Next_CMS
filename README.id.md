@@ -13,6 +13,21 @@ Aplikasi Next.js bertenaga untuk membangun dan mengelola konten dengan CredBuild
 - **Content Management**: Dashboard yang tangguh untuk halaman, postingan, dan media.
 - **SEO Optimized**: Sitemap dinamis, Robots.txt, dan metadata otomatis.
 - **Modern Stack**: Dibangun dengan Next.js 15, Prisma ORM, dan Tailwind CSS.
+- **Luxury Dark Studio**: UI dashboard premium dengan desain ringkas berkepadatan tinggi.
+
+## Tampilan Preview
+
+| Dashboard Overview | Media Library (Folder Based) |
+| :---: | :---: |
+| ![Dashboard Overview](docs/previews/dashboard_overview.png) | ![Media Library](docs/previews/media_library.png) |
+
+| Manajemen Konten | Manajemen Taksonomi |
+| :---: | :---: |
+| ![Daftar Halaman](docs/previews/pages_list.png) | ![Manajemen Taksonomi](docs/previews/taxonomy_dashboard.png) |
+
+| Pengelolaan Term | Pengaturan & UI Ringkas |
+| :---: | :---: |
+| ![Pengelolaan Term](docs/previews/terms_management.png) | ![Pengaturan Header](docs/previews/settings_header.png) |
 
 ## Memulai
 

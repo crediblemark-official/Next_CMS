@@ -13,6 +13,21 @@ A powerful Next.js application for building and managing content with CredBuild.
 - **Content Management**: Robust dashboard for pages, posts, and media.
 - **SEO Optimized**: Dynamic Sitemap, Robots.txt, and metadata.
 - **Modern Stack**: Built with Next.js 15, Prisma ORM, and Tailwind CSS.
+- **Luxury Dark Studio**: Premium dashboard UI with high-density compact design.
+
+## Previews
+
+| Dashboard Overview | Media Library (Folder Based) |
+| :---: | :---: |
+| ![Dashboard Overview](docs/previews/dashboard_overview.png) | ![Media Library](docs/previews/media_library.png) |
+
+| Content Management | Taxonomy Dashboard |
+| :---: | :---: |
+| ![Pages List](docs/previews/pages_list.png) | ![Taxonomy Dashboard](docs/previews/taxonomy_dashboard.png) |
+
+| Terms Management | Settings & Compact UI |
+| :---: | :---: |
+| ![Terms Management](docs/previews/terms_management.png) | ![Header Settings](docs/previews/settings_header.png) |
 
 ## Getting Started
 
