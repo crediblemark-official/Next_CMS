@@ -56,6 +56,21 @@ export const updateEnv = async (updates: Record<string, string>) => {
 };
 
 /**
+ * Checks if the current environment allows writing to the filesystem.
+ * Useful for detecting Read-only environments like Vercel.
+ */
+export const isFileSystemWritable = async () => {
+    const testPath = path.resolve(process.cwd(), ".write-test");
+    try {
+        fs.writeFileSync(testPath, "test", "utf8");
+        fs.unlinkSync(testPath);
+        return true;
+    } catch (e) {
+        return false;
+    }
+};
+
+/**
  * Generates a secure random string for NEXTAUTH_SECRET.
  */
 export const generateNextAuthSecret = () => {

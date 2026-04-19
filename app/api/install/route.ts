@@ -38,8 +38,15 @@ export async function POST(req: Request) {
         }
 
         const envSuccess = await updateEnv(envUpdates);
+        
+        // In read-only environments (like Vercel), updateEnv will fail.
+        // We only throw if we don't already have critical vars in the system env.
+        if (!envSuccess && !process.env.DATABASE_URL) {
+            throw new Error("Failed to persist environment configuration and no system variables detected. Please set DATABASE_URL in your hosting provider's dashboard.");
+        }
+
         if (!envSuccess) {
-            throw new Error("Failed to persist environment configuration to disk.");
+            console.warn("[INSTALLER_API] Could not write to .env, but continuing as system variables may be present.");
         }
 
         // 3. Clear potentially half-initialized data (Safety)

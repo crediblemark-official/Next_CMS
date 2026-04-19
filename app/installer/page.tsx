@@ -53,8 +53,12 @@ export default function InstallerPage() {
         password: ""
     });
 
+    // System status
+    const [systemStatus, setSystemStatus] = useState<any>(null);
+    const [isPreConfigured, setIsPreConfigured] = useState(false);
+
     useEffect(() => {
-        // Auto-detect URLs
+        // 1. Auto-detect URLs
         if (typeof window !== "undefined") {
             const origin = window.location.origin;
             setEnvConfig(prev => ({
@@ -63,6 +67,24 @@ export default function InstallerPage() {
                 nextPublicAppUrl: origin
             }));
         }
+
+        // 2. Fetch System Status
+        const checkStatus = async () => {
+            try {
+                const res = await fetch("/api/install/status");
+                const data = await res.json();
+                if (data.success) {
+                    setSystemStatus(data.status);
+                    if (data.status.dbUrlExists && data.status.dbConnected) {
+                        setIsPreConfigured(true);
+                        setDbTestStatus("success");
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to fetch system status");
+            }
+        };
+        checkStatus();
     }, []);
 
     const handleNext = () => setStep(s => s + 1);
@@ -75,7 +97,7 @@ export default function InstallerPage() {
             const res = await fetch("/api/install/test-db", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ url: envConfig.databaseUrl })
+                body: JSON.stringify({ url: envConfig.databaseUrl || undefined }) 
             });
             const data = await res.json();
             if (res.ok) setDbTestStatus("success");
@@ -151,8 +173,22 @@ export default function InstallerPage() {
                     <div className="w-16 h-16 bg-[#202020] border border-[#2f2f2f] rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-2xl">
                         <Rocket className="text-[#2eaadc]" size={32} />
                     </div>
-                    <h1 className="text-3xl font-bold tracking-tight text-white mb-2">Next_CMS Setup</h1>
+                    <h1 className="text-3xl font-bold tracking-tight text-white mb-2">Next CMS Setup</h1>
                     <p className="text-gray-400 text-sm">Configure your infrastructure and identities.</p>
+                    {systemStatus && (
+                        <div className="flex items-center justify-center gap-2 mt-4">
+                            {systemStatus.dbUrlExists && (
+                                <span className="px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-[9px] font-bold uppercase tracking-widest rounded">
+                                    System Env Detected
+                                </span>
+                            )}
+                            {!systemStatus.isWritable && (
+                                <span className="px-2 py-0.5 bg-amber-500/10 border border-amber-500/20 text-amber-500 text-[9px] font-bold uppercase tracking-widest rounded">
+                                    Read-only Environment
+                                </span>
+                            )}
+                        </div>
+                    )}
                 </div>
 
                 {/* Progress Indicators */}
@@ -204,7 +240,8 @@ export default function InstallerPage() {
                                         value={envConfig.databaseUrl}
                                         onChange={(e) => setEnvConfig({...envConfig, databaseUrl: e.target.value})}
                                         className="w-full px-3 py-2 bg-[#191919] border border-[#2f2f2f] rounded-lg text-xs text-white placeholder-gray-700 outline-none focus:border-[#2eaadc] transition-colors"
-                                        placeholder="postgresql://user:pass@host:port/db"
+                                        placeholder={isPreConfigured ? "Using system environment variable" : "postgresql://user:pass@host:port/db"}
+                                        disabled={isPreConfigured && !envConfig.databaseUrl}
                                     />
                                     {dbTestStatus === "success" && <p className="text-[10px] text-emerald-500 font-bold uppercase tracking-tighter">✔ Handshake Successful</p>}
                                     {dbTestStatus === "error" && <p className="text-[10px] text-red-500 font-bold uppercase tracking-tighter">✘ {testError}</p>}
@@ -324,7 +361,7 @@ export default function InstallerPage() {
                                             value={siteInfo.siteName}
                                             onChange={(e) => setSiteInfo({...siteInfo, siteName: e.target.value})}
                                             className="w-full pl-10 pr-4 py-3 bg-[#191919] border border-[#2f2f2f] rounded-xl text-sm text-white placeholder-gray-700 outline-none focus:border-[#2eaadc] transition-colors"
-                                            placeholder="My Awesome Site"
+                                            placeholder="Next CMS"
                                             required
                                         />
                                     </div>
@@ -451,7 +488,7 @@ export default function InstallerPage() {
                             <div>
                                 <h1 className="text-3xl font-bold text-white mb-2">Architectural Success</h1>
                                 <p className="text-gray-400 text-sm max-w-sm mx-auto leading-relaxed">
-                                    Next_CMS has been fully deployed. Environment config has been persisted to .env. Please restart your server to finalize.
+                                    Next CMS has been fully deployed. {systemStatus?.isWritable ? "Environment config has been persisted to .env. Please restart your server to finalize." : "Configuration used from system environment variables."}
                                 </p>
                             </div>
 
