@@ -24,7 +24,7 @@ const createEmotionCachePlugin = (key: string): Plugin => {
               );
             }
           }, 0);
-        }, [document, key]);
+        }, [document]);
 
         if (cache) {
           return <CacheProvider value={cache}>{children}</CacheProvider>;

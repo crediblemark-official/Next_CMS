@@ -24,7 +24,7 @@ export const Editor = memo((props: EditorProps) => {
 
   const loadedExtensions = useMemo(
     () => [CredBuildRichText.configure(options), ...extensions],
-    [field, extensions]
+    [extensions, options]
   );
 
   const appStoreApi = useAppStoreApi();

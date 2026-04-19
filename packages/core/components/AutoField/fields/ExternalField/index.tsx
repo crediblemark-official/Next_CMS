@@ -30,7 +30,7 @@ export const ExternalField = ({
         "Warning: The `adaptor` API is deprecated. Please use updated APIs on the `external` field instead. This will be a breaking change in a future release."
       );
     }
-  }, []);
+  }, [deprecatedField.adaptor]);
 
   if (field.type !== "external") {
     return null;

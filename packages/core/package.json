@@ -66,6 +66,7 @@
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
     "build": "rm -rf dist && tsup bundle/index.ts bundle/rsc.tsx bundle/no-external.ts bundle/internal.ts",
+    "dev": "tsup bundle/index.ts bundle/rsc.tsx bundle/no-external.ts bundle/internal.ts --watch",
     "test": "jest"
   },
   "files": [

@@ -170,7 +170,7 @@ export function useRegisterHistorySlice(
           initialAppState,
         },
       }),
-    [histories, index, initialAppState]
+    [histories, index, initialAppState, appStore]
   );
 
   const back = () => {

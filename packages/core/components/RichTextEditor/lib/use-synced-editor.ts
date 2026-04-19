@@ -133,7 +133,7 @@ export function useSyncedEditor({
     }
 
     syncingRef.current = false;
-  }, [content, editor, appStoreApi]);
+  }, [content, editor, appStoreApi, isPending]);
 
   return editor;
 }

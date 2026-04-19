@@ -131,7 +131,7 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, []);
+  }, [dispatch]);
 
   const overrides = useAppStore((s) => s.overrides);
 
@@ -243,7 +243,7 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
     });
 
     return details;
-  }, [plugins, currentPlugin, appStoreApi, leftSideBarVisible]);
+  }, [plugins, currentPlugin, leftSideBarVisible, hasLegacySideBarPlugin, setUi]);
 
   useEffect(() => {
     if (!currentPlugin) {
@@ -251,7 +251,7 @@ export const Layout = ({ children }: { children?: ReactNode }) => {
 
       setUi({ plugin: { current: names[0] } });
     }
-  }, [pluginItems, currentPlugin]);
+  }, [pluginItems, currentPlugin, setUi]);
 
   const hasDesktopFieldsPlugin =
     pluginItems["fields"] && pluginItems["fields"].mobileOnly === false;

@@ -1,0 +1,75 @@
+/* css-module:/home/rasyiqi/Project/Next_CMS/packages/plugin-heading-analyzer/src/HeadingAnalyzer.module.css/#css-module-data */
+._HeadingAnalyzer_1rzpc_1 {
+  display: block;
+  padding: 16px;
+}
+._HeadingAnalyzer-cssWarning_1rzpc_6 {
+  display: none !important;
+}
+._HeadingAnalyzerItem_1rzpc_10 {
+  display: inline;
+}
+._HeadingAnalyzerItem--missing_1rzpc_14 {
+  color: var(--credbuild-color-red-04);
+}
+
+/* css-module:/home/rasyiqi/Project/Next_CMS/packages/core/components/OutlineList/styles.module.css/#css-module-data */
+._OutlineList_nopmx_1 {
+  color: var(--credbuild-color-grey-03);
+  font-family: var(--credbuild-font-family);
+  margin: 0;
+  padding-inline-start: 8px;
+  position: relative;
+  list-style: none;
+}
+._OutlineList_nopmx_1::before {
+  background: var(--credbuild-color-grey-08);
+  position: absolute;
+  left: -1px;
+  top: 0px;
+  width: 1px;
+  height: calc(100% - 9px);
+  content: "";
+}
+._OutlineList_nopmx_1:dir(rtl)::before {
+  left: unset;
+  right: -1px;
+}
+._OutlineListItem_nopmx_25 {
+  position: relative;
+  margin-bottom: 4px;
+}
+._OutlineListItem_nopmx_25::before {
+  background: var(--credbuild-color-grey-08);
+  position: absolute;
+  left: -9px;
+  top: 9px;
+  width: 5px;
+  height: 1px;
+  content: "";
+}
+._OutlineListItem_nopmx_25:dir(rtl)::before {
+  left: unset;
+  right: -17px;
+}
+._OutlineListItem--clickable_nopmx_45 {
+  cursor: pointer;
+  transition: color 50ms ease-in;
+}
+._OutlineListItem--clickable_nopmx_45:focus-visible {
+  outline: 2px solid var(--credbuild-color-azure-05);
+  outline-offset: 2px;
+}
+@media (hover: hover) and (pointer: fine) {
+  ._OutlineListItem--clickable_nopmx_45:hover {
+    color: var(--credbuild-color-azure-04);
+    transition: none;
+  }
+}
+._OutlineListItem--clickable_nopmx_45:active {
+  color: var(--credbuild-color-azure-03);
+  transition: none;
+}
+._OutlineListItem_nopmx_25 > ._OutlineList_nopmx_1 {
+  margin: 8px 0;
+}

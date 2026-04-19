@@ -82,7 +82,7 @@ export const Canvas = () => {
 
   const CustomPreview = useMemo(
     () => overrides.preview || defaultRender,
-    [overrides]
+    [overrides, defaultRender]
   );
 
   const getFrameDimensions = useCallback(() => {
@@ -104,9 +104,9 @@ export const Canvas = () => {
     frameRef,
     leftSideBarVisible,
     rightSideBarVisible,
-    leftSideBarWidth,
     rightSideBarWidth,
     viewports,
+    resetAutoZoom,
   ]);
 
   // Constrain height
@@ -119,14 +119,14 @@ export const Canvas = () => {
         rootHeight: frameHeight / zoomConfig.zoom,
       });
     }
-  }, [zoomConfig.zoom, getFrameDimensions, setZoomConfig]);
+  }, [zoomConfig.zoom, getFrameDimensions, setZoomConfig, viewports, zoomConfig]);
 
   // Zoom whenever state changes, even if external driver
   useEffect(() => {
     if (ZOOM_ON_CHANGE) {
       resetAutoZoom();
     }
-  }, [viewports.current.width, viewports]);
+  }, [viewports.current.width, viewports, resetAutoZoom]);
 
   // Resize based on frame size
   useEffect(() => {
@@ -143,7 +143,7 @@ export const Canvas = () => {
     return () => {
       resizeObserver.disconnect();
     };
-  }, [frameRef.current]);
+  }, [frameRef, resetAutoZoom]);
 
   const [showLoader, setShowLoader] = useState(false);
 
@@ -228,10 +228,10 @@ export const Canvas = () => {
     }
   }, [
     viewportOptions,
-    frameRef.current,
     iframe,
     appStoreApi,
-    uiProp?.viewports?.current,
+    uiProp?.viewports,
+    frameRef,
   ]);
 
   return (

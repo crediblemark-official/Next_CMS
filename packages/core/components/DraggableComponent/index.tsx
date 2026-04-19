@@ -143,7 +143,7 @@ export const DraggableComponent = ({
         [zoneCompound]: active,
       }));
     },
-    [setLocalZones]
+    [setLocalZones, ctx]
   );
 
   const unregisterLocalZone = useCallback(
@@ -161,7 +161,7 @@ export const DraggableComponent = ({
         return newLocalZones;
       });
     },
-    [setLocalZones]
+    [setLocalZones, ctx]
   );
 
   const containsActiveZone =
@@ -234,7 +234,7 @@ export const DraggableComponent = ({
     }
 
     return cleanup;
-  }, [permissions.drag, zoneCompound]);
+  }, [permissions.drag, zoneCompound, sortable.draggable, sortable.droppable, zoneStore]);
 
   const [, setRerender] = useState(0);
 
@@ -439,7 +439,7 @@ export const DraggableComponent = ({
         });
       }
     },
-    [index, zoneCompound, id, isSelected, _experimentalFullScreenCanvas]
+    [index, zoneCompound, isSelected, _experimentalFullScreenCanvas, dispatch, zoneStore]
   );
 
   const appStore = useAppStoreApi();
@@ -469,7 +469,7 @@ export const DraggableComponent = ({
         },
       },
     });
-  }, [ctx, path]);
+  }, [appStore, dispatch, id]);
 
   const onDuplicate = useCallback(() => {
     dispatch({
@@ -477,7 +477,7 @@ export const DraggableComponent = ({
       sourceIndex: index,
       sourceZone: zoneCompound,
     });
-  }, [index, zoneCompound]);
+  }, [index, zoneCompound, dispatch]);
 
   const onDelete = useCallback(() => {
     dispatch({
@@ -485,7 +485,7 @@ export const DraggableComponent = ({
       index: index,
       zone: zoneCompound,
     });
-  }, [index, zoneCompound]);
+  }, [index, zoneCompound, dispatch]);
 
   const [hover, setHover] = useState(false);
 
@@ -505,8 +505,7 @@ export const DraggableComponent = ({
       const userIsDragging = !!zoneStore.getState().draggedItem;
 
       if (userIsDragging) {
-        // User is dragging, and dragging this item
-        if (thisIsDragging) {
+        if (containsActiveZone) {
           setHover(true);
         } else {
           setHover(false);
@@ -539,13 +538,15 @@ export const DraggableComponent = ({
       el.removeEventListener("mouseout", _onMouseOut);
     };
   }, [
-    ref.current, // Remount attributes if the element changes
+    ref, // Remount attributes if the element changes
     onClick,
     containsActiveZone,
     zoneCompound,
-    id,
+    setHover,
     thisIsDragging,
     inDroppableZone,
+    zoneStore,
+    id,
   ]);
 
   const [isVisible, setIsVisible] = useState(false);
@@ -562,21 +563,26 @@ export const DraggableComponent = ({
         setIsVisible(false);
       }
     });
-  }, [hover, indicativeHover, isSelected, iframe]);
+  }, [hover, indicativeHover, isSelected, iframe, scheduleSync]);
 
   const [thisWasDragging, setThisWasDragging] = useState(false);
 
-  const onDragFinished = useOnDragFinished((finished) => {
-    if (finished) {
-      startTransition(() => {
-        // Sync immediately, to avoid a flash of the overlay in the wrong place.
-        sync();
-        setDragFinished(true);
-      });
-    } else {
-      setDragFinished(false);
-    }
-  });
+  const onDragFinished = useOnDragFinished(
+    useCallback(
+      (finished) => {
+        if (finished) {
+          startTransition(() => {
+            // Sync immediately, to avoid a flash of the overlay in the wrong place.
+            sync();
+            setDragFinished(true);
+          });
+        } else {
+          setDragFinished(false);
+        }
+      },
+      [sync, startTransition]
+    )
+  );
 
   useEffect(() => {
     if (thisIsDragging) {
@@ -672,7 +678,7 @@ export const DraggableComponent = ({
         }
       }
     },
-    [zoom]
+    []
   );
 
   useEffect(() => {
@@ -705,7 +711,7 @@ export const DraggableComponent = ({
           <CornerLeftUp size={16} />
         </ActionBar.Action>
       ),
-    [ctx?.areaId]
+    [ctx?.areaId, onSelectParent]
   );
 
   const nextContextValue = useMemo<DropZoneContext>(

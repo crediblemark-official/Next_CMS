@@ -67,7 +67,7 @@ const HeaderInner = <
     }
 
     return DefaultOverride;
-  }, [renderHeader]);
+  }, [renderHeader, dispatch]);
 
   // DEPRECATED
   const defaultHeaderActionsRender = useMemo((): Overrides["headerActions"] => {
@@ -88,7 +88,7 @@ const HeaderInner = <
     }
 
     return DefaultOverride;
-  }, [renderHeaderActions]);
+  }, [renderHeaderActions, dispatch]);
 
   const CustomHeader = useAppStore(
     (s) => s.overrides.header || defaultHeaderRender

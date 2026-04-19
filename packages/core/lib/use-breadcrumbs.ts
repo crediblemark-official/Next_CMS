@@ -52,5 +52,5 @@ export const useBreadcrumbs = (renderCount?: number) => {
     }
 
     return breadcrumbs;
-  }, [path, renderCount]);
+  }, [path, renderCount, appStore, config.components, config?.root?.label]);
 };

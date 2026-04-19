@@ -54,7 +54,7 @@ export const ExternalInput = ({
 
   const mappedData = useMemo(() => {
     return data.map(mapRow);
-  }, [data]);
+  }, [data, mapRow]);
 
   const keys = useMemo(() => {
     const validKeys: Set<string> = new Set();
@@ -99,7 +99,7 @@ export const ExternalInput = ({
         }
       }
     },
-    [id, field]
+    [id, field, shouldCacheData]
   );
 
   const Footer = useCallback(
@@ -111,12 +111,12 @@ export const ExternalInput = ({
           {props.items.length} result{props.items.length === 1 ? "" : "s"}
         </span>
       ),
-    [field.renderFooter]
+    [field]
   );
 
   useEffect(() => {
     search(searchQuery, filters);
-  }, []);
+  }, [search, searchQuery, filters]);
 
   return (
     <div

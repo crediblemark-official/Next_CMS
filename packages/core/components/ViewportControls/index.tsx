@@ -99,7 +99,7 @@ export const ViewportControls = ({
       ]
         .filter((a) => a.value <= autoZoom)
         .sort((a, b) => (a.value > b.value ? 1 : -1)),
-    [autoZoom]
+    [autoZoom, defaultsContainAutoZoom]
   );
 
   const [activeViewport, setActiveViewport] = useState(
@@ -108,7 +108,7 @@ export const ViewportControls = ({
 
   useEffect(() => {
     setActiveViewport(uiViewports.current.width);
-  }, [uiViewports.current]);
+  }, [uiViewports.current.width, uiViewports]);
 
   const [isExpanded, setIsExpanded] = useState(false);
 

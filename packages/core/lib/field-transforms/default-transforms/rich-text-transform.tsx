@@ -71,7 +71,7 @@ const InlineEditorWrapper = memo(
         disableDragOnFocus: true,
       });
       return () => cleanup?.();
-    }, [portalRef.current]);
+    }, []);
 
     const handleChange = useCallback(
       async (content: string | JSONContent, ui?: Partial<UiState>) => {
@@ -113,7 +113,7 @@ const InlineEditorWrapper = memo(
           },
         });
       },
-      [field, componentId]
+      [field, componentId, appStoreApi, id]
     );
 
     if (!field.contentEditable)

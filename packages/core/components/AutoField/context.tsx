@@ -57,7 +57,7 @@ export const NestedFieldProvider = ({
 
         return acc;
       }, {}),
-    [name, subName, wildcardName, readOnlyFields]
+    [name, wildcardName, readOnlyFields, subPath, wildcardSubPath]
   );
 
   return (

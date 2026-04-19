@@ -156,7 +156,7 @@ const DropZoneChild = ({
     }
 
     return null;
-  }, [appStore, componentId, zoneCompound, nodeType, nodeProps]);
+  }, [componentId, zoneCompound, nodeType, nodeProps, zoneStore]);
 
   const componentConfig = useAppStore((s) =>
     item?.type ? s.config.components[item.type] : null
@@ -214,7 +214,7 @@ const DropZoneChild = ({
       ),
       ...userFieldTransforms,
     }),
-    [plugins, userFieldTransforms]
+    [plugins, userFieldTransforms, componentId]
   );
 
   const transformedProps = useFieldTransformsTracked(
@@ -358,7 +358,7 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
           ctx?.registerZone(zoneCompound);
         }
       }
-    }, [zoneType, appStoreApi]);
+    }, [zoneType, appStoreApi, ctx, zoneCompound]);
 
     useEffect(() => {
       if (zoneType === "dropzone") {
@@ -368,7 +368,7 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
           );
         }
       }
-    }, [zoneType]);
+    }, [zoneType, zoneCompound]);
 
     const contentIds = useMemo(() => {
       return zoneContentIds || [];
@@ -434,7 +434,7 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
           unregisterLocalZone(zoneCompound);
         }
       };
-    }, [targetAccepted, isEnabled, zoneCompound]);
+    }, [targetAccepted, isEnabled, zoneCompound, registerLocalZone, unregisterLocalZone]);
 
     const [contentIdsWithPreview, preview] = useContentIdsWithPreview(
       contentIds,
@@ -488,7 +488,7 @@ export const DropZoneEdit = forwardRef<HTMLDivElement, DropZoneProps>(
       (node: any) => {
         assignRefs<any>([ref, dropRef, userRef], node);
       },
-      [dropRef]
+      [dropRef, userRef]
     );
 
     const _experimentalVirtualization = useAppStore(
@@ -608,7 +608,13 @@ const DropZoneRender = forwardRef<HTMLDivElement, DropZoneProps>(
     const { config, data, metadata } = useContext(renderContext);
 
     let zoneCompound = `${areaId}:${zone}`;
-    let content = data?.content || [];
+    const content = useMemo(() => {
+      if (zoneCompound !== rootDroppableId) {
+        return setupZone(data, zoneCompound).zones[zoneCompound];
+      }
+
+      return data?.content || [];
+    }, [data, zoneCompound]);
 
     // Register zones if running Render mode inside editor (i.e. previewMode === "interactive")
     useEffect(() => {
@@ -618,7 +624,7 @@ const DropZoneRender = forwardRef<HTMLDivElement, DropZoneProps>(
           ctx?.registerZone(zoneCompound);
         }
       }
-    }, [content]);
+    }, [content, ctx, zoneCompound]);
 
     const El = as ?? "div";
 
@@ -626,9 +632,6 @@ const DropZoneRender = forwardRef<HTMLDivElement, DropZoneProps>(
       return null;
     }
 
-    if (zoneCompound !== rootDroppableId) {
-      content = setupZone(data, zoneCompound).zones[zoneCompound];
-    }
     return (
       <El className={className} style={style} ref={ref}>
         {content.map((item) => {

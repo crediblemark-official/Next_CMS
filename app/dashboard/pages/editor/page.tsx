@@ -171,7 +171,7 @@ function PageEditorContent() {
                                 {formData.metaData.length === 0 ? (
                                     <div className="py-6 flex flex-col items-center justify-center border border-dashed border-white/5 rounded-lg text-center">
                                         <p className="text-[10px] text-gray-500 font-medium italic">No custom fields defined.</p>
-                                        <p className="text-[9px] text-gray-600 mt-0.5">Define unique page attributes like "Subtitle", "Event Date", or "Price".</p>
+                                        <p className="text-[9px] text-gray-600 mt-0.5">Define unique page attributes like &quot;Subtitle&quot;, &quot;Event Date&quot;, or &quot;Price&quot;.</p>
                                     </div>
                                 ) : (
                                     formData.metaData.map((meta, index) => (

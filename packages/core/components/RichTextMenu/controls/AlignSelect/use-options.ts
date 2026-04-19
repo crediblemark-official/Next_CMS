@@ -12,29 +12,31 @@ const optionNodes: Record<string, { label: string; icon?: React.FC }> = {
 export type AlignDirection = "left" | "center" | "right" | "justify";
 
 export const useAlignOptions = (fieldOptions: RichtextField["options"]) => {
-  let blockOptions: AlignDirection[] = [];
+  const blockOptions: AlignDirection[] = useMemo(() => {
+    const options: AlignDirection[] = [];
+    if (fieldOptions?.textAlign !== false) {
+      if (!fieldOptions?.textAlign?.alignments) {
+        return ["left", "center", "right", "justify"];
+      } else {
+        if (fieldOptions?.textAlign.alignments.includes("left")) {
+          options.push("left");
+        }
 
-  if (fieldOptions?.textAlign !== false) {
-    if (!fieldOptions?.textAlign?.alignments) {
-      blockOptions = ["left", "center", "right", "justify"];
-    } else {
-      if (fieldOptions?.textAlign.alignments.includes("left")) {
-        blockOptions.push("left");
-      }
+        if (fieldOptions?.textAlign.alignments.includes("center")) {
+          options.push("center");
+        }
 
-      if (fieldOptions?.textAlign.alignments.includes("center")) {
-        blockOptions.push("center");
-      }
+        if (fieldOptions?.textAlign.alignments.includes("right")) {
+          options.push("right");
+        }
 
-      if (fieldOptions?.textAlign.alignments.includes("right")) {
-        blockOptions.push("right");
-      }
-
-      if (fieldOptions?.textAlign.alignments.includes("justify")) {
-        blockOptions.push("justify");
+        if (fieldOptions?.textAlign.alignments.includes("justify")) {
+          options.push("justify");
+        }
       }
     }
-  }
+    return options;
+  }, [fieldOptions?.textAlign]);
 
   return useMemo(
     () =>

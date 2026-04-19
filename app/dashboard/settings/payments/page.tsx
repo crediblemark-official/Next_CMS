@@ -103,14 +103,15 @@ export default function PaymentSettingsPage() {
                         name="currency" 
                         value={formData.currency} 
                         onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
-                    >
-                        <option value="USD" className="bg-[#191919]">USD ($)</option>
-                        <option value="IDR" className="bg-[#191919]">IDR (Rp)</option>
-                        <option value="EUR" className="bg-[#191919]">EUR (€)</option>
-                        <option value="GBP" className="bg-[#191919]">GBP (£)</option>
-                        <option value="SGD" className="bg-[#191919]">SGD (S$)</option>
-                        <option value="AUD" className="bg-[#191919]">AUD (A$)</option>
-                    </FormSelect>
+                        options={[
+                            { label: "USD ($)", value: "USD" },
+                            { label: "IDR (Rp)", value: "IDR" },
+                            { label: "EUR (€)", value: "EUR" },
+                            { label: "GBP (£)", value: "GBP" },
+                            { label: "SGD (S$)", value: "SGD" },
+                            { label: "AUD (A$)", value: "AUD" }
+                        ]}
+                    />
 
                     <FormInput label="Bank Name" name="bankName" value={formData.bankName} onChange={handleChange} required placeholder="Bank Central Asia (BCA)" />
                     <FormInput label="Account Number" name="accountNumber" value={formData.accountNumber} onChange={handleChange} required className="font-mono" />

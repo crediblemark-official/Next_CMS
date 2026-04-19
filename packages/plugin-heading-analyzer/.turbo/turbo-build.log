@@ -1,0 +1,19 @@
+
+[0m[2m[35m$[0m [2m[1mrm -rf dist && tsup index.ts[0m
+[34mCLI[39m Building entry: index.ts
+[34mCLI[39m Using tsconfig: tsconfig.json
+[34mCLI[39m tsup v8.5.1
+[34mCLI[39m Using tsup config: /home/rasyiqi/Project/Next_CMS/packages/plugin-heading-analyzer/tsup.config.ts
+[34mCLI[39m Target: es6
+[34mCJS[39m Build start
+[34mESM[39m Build start
+DTS Build start
+[32mESM[39m [1mdist/index.mjs [22m[32m89.55 KB[39m
+[32mESM[39m [1mdist/index.css [22m[32m1.84 KB[39m
+[32mESM[39m ⚡️ Build success in 1338ms
+[32mCJS[39m [1mdist/index.css [22m[32m1.84 KB[39m
+[32mCJS[39m [1mdist/index.js  [22m[32m90.64 KB[39m
+[32mCJS[39m ⚡️ Build success in 1365ms
+DTS ⚡️ Build success in 3852ms
+DTS dist/index.d.ts  25.78 KB
+DTS dist/index.d.mts 25.78 KB

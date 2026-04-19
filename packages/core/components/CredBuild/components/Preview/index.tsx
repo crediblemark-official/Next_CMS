@@ -62,7 +62,7 @@ const useBubbleIframeEvents = (ref: RefObject<HTMLIFrameElement | null>) => {
         unregister();
       };
     }
-  }, [status]);
+  }, [status, ref]);
 };
 
 export const Preview = ({ id = "credbuild-preview" }: { id?: string }) => {
@@ -135,7 +135,7 @@ export const Preview = ({ id = "credbuild-preview" }: { id?: string }) => {
     if (!iframe.enabled) {
       setStatus("READY");
     }
-  }, [iframe.enabled]);
+  }, [iframe.enabled, setStatus]);
 
   return (
     <div

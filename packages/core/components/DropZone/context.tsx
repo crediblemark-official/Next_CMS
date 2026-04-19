@@ -109,7 +109,7 @@ export const DropZoneProvider = ({
         registerZone,
         ...value,
       } as DropZoneContext),
-    [value]
+    [value, registerZone]
   );
 
   return (

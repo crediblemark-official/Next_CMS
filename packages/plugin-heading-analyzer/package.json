@@ -18,7 +18,8 @@
   "license": "MIT",
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
-    "build": "rm -rf dist && tsup index.ts"
+    "build": "rm -rf dist && tsup index.ts",
+    "dev": "tsup index.ts --watch"
   },
   "files": [
     "dist"

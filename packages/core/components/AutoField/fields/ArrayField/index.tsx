@@ -196,7 +196,7 @@ export const ArrayField = ({
   const fieldStore = useFieldStoreApi();
   const { localName = name } = useNestedFieldContext();
 
-  const getValue = () => getDeep(fieldStore.getState(), name) ?? [];
+  const getValue = useCallback(() => getDeep(fieldStore.getState(), name) ?? [], [fieldStore, name]);
 
   const getArrayState = useCallback(() => {
     const { state } = appStoreApi.getState();
@@ -217,7 +217,7 @@ export const ArrayField = ({
       }),
       openId: "",
     };
-  }, [appStoreApi, id, getValue, name]);
+  }, [appStoreApi, id, getValue]);
 
   const numItems = useFieldStore(() => {
     return getValue().length;
@@ -244,7 +244,7 @@ export const ArrayField = ({
         },
       };
     },
-    [appStore]
+    [appStore, id, getArrayState]
   );
 
   const getHighestIndex = useCallback(() => {
@@ -252,7 +252,7 @@ export const ArrayField = ({
       (acc, item) => (item._originalIndex > acc ? item._originalIndex : acc),
       -1
     );
-  }, []);
+  }, [getArrayState]);
 
   const regenerateArrayState = useCallback((value: object[]) => {
     let highestIndex = getHighestIndex();
@@ -278,7 +278,7 @@ export const ArrayField = ({
 
     // We don't need to record history during this useEffect, as the history has already been set by onDragEnd
     return { ...arrayState, items: newItems };
-  }, []);
+  }, [getArrayState, getHighestIndex, id]);
 
   const [draggedItem, setDraggedItem] = useState("");
   const isDraggingAny = !!draggedItem;
@@ -287,7 +287,7 @@ export const ArrayField = ({
 
   useEffect(() => {
     valueRef.current = getValue();
-  }, []);
+  }, [getValue]);
 
   /**
    * Walk the item and ensure all slotted items have unique IDs
@@ -332,7 +332,7 @@ export const ArrayField = ({
     };
 
     setUi(newUi, false);
-  }, []);
+  }, [appStore, id, getArrayState, setUi]);
 
   const updateValue = useCallback(
     (newValue: object[]) => {
@@ -348,7 +348,7 @@ export const ArrayField = ({
   useEffect(() => {
     const newArrayState = regenerateArrayState(getValue());
     setUi(mapArrayStateToUi(newArrayState), false);
-  }, [numItems]);
+  }, [numItems, getValue, mapArrayStateToUi, regenerateArrayState, setUi]);
 
   if (field.type !== "array" || !field.arrayFields) {
     return null;

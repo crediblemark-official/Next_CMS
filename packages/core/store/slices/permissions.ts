@@ -238,7 +238,7 @@ export const useRegisterPermissionsSlice = (
     });
 
     permissions.resolvePermissions();
-  }, [globalPermissions]);
+  }, [globalPermissions, appStore]);
 
   useEffect(() => {
     return appStore.subscribe(
@@ -247,7 +247,7 @@ export const useRegisterPermissionsSlice = (
         appStore.getState().permissions.resolvePermissions();
       }
     );
-  }, []);
+  }, [appStore]);
 
   useEffect(() => {
     return appStore.subscribe(
@@ -256,5 +256,5 @@ export const useRegisterPermissionsSlice = (
         appStore.getState().permissions.resolvePermissions();
       }
     );
-  }, []);
+  }, [appStore]);
 };

@@ -186,14 +186,20 @@ export const useMonitorHotkeys = () => {
 };
 
 export const useHotkey = (combo: KeyMapStrict, cb: Function) => {
-  useEffect(
-    () =>
-      useHotkeyStore.setState((s) => ({
-        triggers: {
-          ...s.triggers,
-          [`${Object.keys(combo).join("+")}`]: { combo, cb },
-        },
-      })),
-    []
-  );
+  useEffect(() => {
+    const key = `${Object.keys(combo).join("+")}`;
+    useHotkeyStore.setState((s) => ({
+      triggers: {
+        ...s.triggers,
+        [key]: { combo, cb },
+      },
+    }));
+
+    return () => {
+      useHotkeyStore.setState((s) => {
+        const { [key]: _, ...triggers } = s.triggers;
+        return { triggers };
+      });
+    };
+  }, [combo, cb]);
 };

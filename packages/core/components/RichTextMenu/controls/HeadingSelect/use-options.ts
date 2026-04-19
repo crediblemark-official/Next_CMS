@@ -21,37 +21,40 @@ const optionNodes: Record<string, { label: string; icon?: React.FC }> = {
 export type HeadingElement = "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
 
 export const useHeadingOptions = (fieldOptions: RichtextField["options"]) => {
-  let blockOptions: HeadingElement[] = [];
+  const blockOptions: HeadingElement[] = useMemo(() => {
+    const options: HeadingElement[] = [];
 
-  if (fieldOptions?.heading !== false) {
-    if (!fieldOptions?.heading?.levels) {
-      blockOptions = ["h1", "h2", "h3", "h4", "h5", "h6"];
-    } else {
-      if (fieldOptions?.heading.levels.includes(1)) {
-        blockOptions.push("h1");
-      }
+    if (fieldOptions?.heading !== false) {
+      if (!fieldOptions?.heading?.levels) {
+        return ["h1", "h2", "h3", "h4", "h5", "h6"];
+      } else {
+        if (fieldOptions?.heading.levels.includes(1)) {
+          options.push("h1");
+        }
 
-      if (fieldOptions?.heading.levels.includes(2)) {
-        blockOptions.push("h2");
-      }
+        if (fieldOptions?.heading.levels.includes(2)) {
+          options.push("h2");
+        }
 
-      if (fieldOptions?.heading.levels.includes(3)) {
-        blockOptions.push("h3");
-      }
+        if (fieldOptions?.heading.levels.includes(3)) {
+          options.push("h3");
+        }
 
-      if (fieldOptions?.heading.levels.includes(4)) {
-        blockOptions.push("h4");
-      }
+        if (fieldOptions?.heading.levels.includes(4)) {
+          options.push("h4");
+        }
 
-      if (fieldOptions?.heading.levels.includes(5)) {
-        blockOptions.push("h5");
-      }
+        if (fieldOptions?.heading.levels.includes(5)) {
+          options.push("h5");
+        }
 
-      if (fieldOptions?.heading.levels.includes(6)) {
-        blockOptions.push("h6");
+        if (fieldOptions?.heading.levels.includes(6)) {
+          options.push("h6");
+        }
       }
     }
-  }
+    return options;
+  }, [fieldOptions?.heading]);
 
   return useMemo(
     () =>

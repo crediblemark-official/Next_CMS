@@ -122,9 +122,12 @@ const FieldsChildInner = ({ fieldName }: { fieldName: string }) => {
 
   const appStore = useAppStoreApi();
 
-  const onChange = useCallback(createOnChange(fieldName, appStore), [
-    fieldName,
-  ]);
+  const onChange = useCallback(
+    async (value: any, updatedUi?: Partial<UiState>) => {
+      createOnChange(fieldName, appStore)(value, updatedUi);
+    },
+    [fieldName, appStore]
+  );
 
   const { visible = true } = field ?? {};
 
@@ -141,7 +144,7 @@ const FieldsChildInner = ({ fieldName }: { fieldName: string }) => {
         fieldStore.setState({ [fieldName]: value });
       }
     );
-  }, [appStore, fieldStore]);
+  }, [appStore, fieldStore, fieldName]);
 
   if (!field || !id || !visible) return null;
 
@@ -167,7 +170,7 @@ const FieldsChild = ({ fieldName }: { fieldName: string }) => {
     const value = appStore.getState().getCurrentData().props?.[fieldName];
 
     return { [fieldName]: value };
-  }, []);
+  }, [appStore, fieldName]);
 
   return (
     <fieldContextStore.Provider value={initialValue}>

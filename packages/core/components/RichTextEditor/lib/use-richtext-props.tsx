@@ -14,6 +14,39 @@ type RichtextPath = {
   field: RichtextField;
 };
 
+const findAllRichtextKeys = (
+  fields:
+    | Fields<any, {}>
+    | Fields<any, { type: string } & BaseField>
+    | undefined,
+  path: string[] = []
+): RichtextPath[] => {
+  if (!fields) return [];
+
+  const result: RichtextPath[] = [];
+
+  for (const [key, field] of Object.entries(fields)) {
+    const currentPath = [...path, key];
+
+    if (field.type === "richtext") {
+      result.push({
+        path: currentPath,
+        field: field as RichtextField,
+      });
+    }
+
+    if (field.type === "array" && "arrayFields" in field) {
+      result.push(...findAllRichtextKeys(field.arrayFields, currentPath));
+    }
+
+    if (field.type === "object" && "objectFields" in field) {
+      result.push(...findAllRichtextKeys(field.objectFields, currentPath));
+    }
+  }
+
+  return result;
+};
+
 export function useRichtextProps(
   fields:
     | Fields<any, {}>
@@ -23,38 +56,6 @@ export function useRichtextProps(
     [x: string]: any;
   }>
 ) {
-  const findAllRichtextKeys = (
-    fields:
-      | Fields<any, {}>
-      | Fields<any, { type: string } & BaseField>
-      | undefined,
-    path: string[] = []
-  ): RichtextPath[] => {
-    if (!fields) return [];
-
-    const result: RichtextPath[] = [];
-
-    for (const [key, field] of Object.entries(fields)) {
-      const currentPath = [...path, key];
-
-      if (field.type === "richtext") {
-        result.push({
-          path: currentPath,
-          field: field as RichtextField,
-        });
-      }
-
-      if (field.type === "array" && "arrayFields" in field) {
-        result.push(...findAllRichtextKeys(field.arrayFields, currentPath));
-      }
-
-      if (field.type === "object" && "objectFields" in field) {
-        result.push(...findAllRichtextKeys(field.objectFields, currentPath));
-      }
-    }
-
-    return result;
-  };
 
   const richtextKeys = useMemo(() => findAllRichtextKeys(fields), [fields]);
 
@@ -81,7 +82,7 @@ export function useRichtextProps(
     }
 
     return result;
-  }, [richtextKeys, props, fields]);
+  }, [richtextKeys, props]);
 
   return richtextProps;
 }

@@ -65,7 +65,7 @@ export const ResizeHandle: React.FC<ResizeHandleProps> = ({
     onResizeEnd(finalWidth);
 
     resetAutoZoom();
-  }, [onResizeEnd]);
+  }, [onResizeEnd, handleMouseMove, resetAutoZoom, sidebarRef]);
 
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
@@ -89,7 +89,7 @@ export const ResizeHandle: React.FC<ResizeHandleProps> = ({
 
       e.preventDefault();
     },
-    [position, handleMouseMove, handleMouseUp]
+    [handleMouseMove, handleMouseUp, sidebarRef]
   );
 
   return (

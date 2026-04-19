@@ -26,7 +26,7 @@ export const useInjectStyleSheet = (
     }
 
     document.head.appendChild(el);
-  }, [iframeEnabled, el]);
+  }, [iframeEnabled, el, initialStyles]);
 
   return el;
 };

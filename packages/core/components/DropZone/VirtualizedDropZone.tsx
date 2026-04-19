@@ -259,7 +259,7 @@ export const VirtualizedDropZone = ({
     }
 
     return items;
-  }, [totalSize, virtualItems, getMeasureRef]);
+  }, [totalSize, virtualItems, getMeasureRef, contentIds, renderItem]);
 
   return <>{renderedItems}</>;
 };

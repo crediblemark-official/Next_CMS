@@ -3,8 +3,7 @@ import { useRef, useEffect } from "react";
 export function useOnValueChange<T>(
   value: T,
   onChange: (value: T, oldValue: T) => void,
-  compare: (value: T, oldValue: T) => boolean = Object.is,
-  deps: any[] = []
+  compare: (value: T, oldValue: T) => boolean = Object.is
 ) {
   const tracked = useRef<T>(value);
 
@@ -15,5 +14,5 @@ export function useOnValueChange<T>(
       tracked.current = value;
       onChange(value, oldValue);
     }
-  }, [onChange, compare, value, ...deps]);
+  }, [onChange, compare, value]);
 }

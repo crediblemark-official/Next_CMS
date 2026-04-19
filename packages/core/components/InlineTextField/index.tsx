@@ -76,15 +76,16 @@ const InlineTextFieldInternal = ({
         });
       };
 
-      ref.current.addEventListener("input", handleInput);
+      const el = ref.current;
+      el.addEventListener("input", handleInput);
 
       return () => {
-        ref.current?.removeEventListener("input", handleInput);
+        el.removeEventListener("input", handleInput);
 
         cleanupPortal?.();
       };
     }
-  }, [appStoreApi, ref.current, value, disableLineBreaks]);
+  }, [appStoreApi, ref, value, disableLineBreaks, componentId, propPath]);
 
   // We disable contentEditable when not hovering or already focused,
   // otherwise Safari focuses the element during drag. Related:

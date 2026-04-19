@@ -9,13 +9,14 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
-    "import": "./dist/index.mjs",
-    "types": "./dist/index.d.ts"
+    "types": "./dist/index.d.ts",
+    "import": "./dist/index.mjs"
   },
   "license": "MIT",
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
-    "build": "rm -rf dist && tsup index.ts"
+    "build": "rm -rf dist && tsup index.ts",
+    "dev": "tsup index.ts --watch"
   },
   "files": [
     "dist"

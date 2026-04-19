@@ -135,7 +135,7 @@ function AutoFieldInternal<
         });
       }
     },
-    [mergedProps.name]
+    [dispatch, mergedProps.name]
   );
 
   const onBlur = useCallback((e: React.FocusEvent) => {
@@ -147,7 +147,7 @@ function AutoFieldInternal<
         },
       });
     }
-  }, []);
+  }, [dispatch]);
 
   let Children = useMemo(() => {
     if (field.type !== "custom" && field.type !== "slot") {
@@ -159,17 +159,19 @@ function AutoFieldInternal<
 
   const fieldKey = field.type === "custom" ? field.key : undefined;
 
+  const fieldRender = (field as any).render;
+
   let FieldComponent: React.ComponentType<any> = useMemo(() => {
     // if there's an override provided for custom fields, fallback to standard behavior
     if (field.type === "custom" && !render[field.type]) {
-      if (!field.render) {
+      if (!fieldRender) {
         return null;
       }
-      return field.render as any;
+      return fieldRender as any;
     } else if (field.type !== "slot") {
       return render[field.type] as (props: FieldProps) => ReactElement;
     }
-  }, [field.type, fieldKey, render]);
+  }, [field.type, render, fieldRender]);
 
   const { visible = true } = props.field;
 
@@ -242,15 +244,17 @@ function AutoFieldPublicInternal<
 
   const fieldStore = useFieldStoreApi();
 
+  const { id: propsId, onChange: propsOnChange } = props;
+
   const onChange = useCallback(
     (value: any) => {
-      if (!props.id) return;
+      if (!propsId) return;
 
-      fieldStore.setState({ [props.id]: value });
+      fieldStore.setState({ [propsId]: value });
 
-      props.onChange(value);
+      propsOnChange(value);
     },
-    [fieldStore, props.onChange, props.id]
+    [fieldStore, propsOnChange, propsId]
   );
 
   useEffect(() => {

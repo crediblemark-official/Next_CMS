@@ -310,10 +310,10 @@ const CopyHostStyles = ({
       });
     });
 
-    return () => {
+    return    () => {
       observer.disconnect();
     };
-  }, []);
+  }, [debug, doc, onStylesLoaded, win]);
 
   return <>{children}</>;
 };
@@ -368,11 +368,9 @@ function AutoFrame({
 
       if (doc && win && stylesLoaded) {
         onReady();
-      } else {
-        onNotReady();
       }
     }
-  }, [frameRef, loaded, stylesLoaded]);
+  }, [frameRef, loaded, stylesLoaded, onReady, onNotReady]);
 
   return (
     <iframe

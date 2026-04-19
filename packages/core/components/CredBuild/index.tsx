@@ -231,7 +231,7 @@ function CredBuildProvider<
     }
 
     return blendedHistories.length - 1;
-  }, []);
+  }, [_initialHistory?.index, blendedHistories.length]);
   const initialAppState = blendedHistories[initialHistoryIndex].state;
 
   // Load all plugins into the overrides
@@ -274,7 +274,6 @@ function CredBuildProvider<
     },
     [
       instanceId,
-      initialAppState,
       config,
       plugins,
       loadedOverrides,
@@ -304,7 +303,7 @@ function CredBuildProvider<
     appStore.setState({
       ...generateAppStore(state),
     });
-  }, [generateAppStore]);
+  }, [generateAppStore, appStore]);
 
   useRegisterHistorySlice(appStore, {
     histories: blendedHistories,
@@ -327,7 +326,7 @@ function CredBuildProvider<
         }
       }
     );
-  }, [onChange]);
+  }, [onChange, appStore]);
 
   useRegisterPermissionsSlice(appStore, permissions);
 
@@ -340,7 +339,7 @@ function CredBuildProvider<
     setTimeout(() => {
       resolveAndCommitData();
     }, 0);
-  }, []);
+  }, [appStore]);
 
   return (
     <appStoreContext.Provider value={appStore}>

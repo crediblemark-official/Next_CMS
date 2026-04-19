@@ -93,7 +93,7 @@ export default function TestimonialCard({ testimonial }: { testimonial: Testimon
 
             <div className="flex-grow">
                 <p className="text-white text-sm leading-relaxed italic">
-                    "{testimonial.quote}"
+                    &quot;{testimonial.quote}&quot;
                 </p>
             </div>
 

@@ -20,7 +20,7 @@ export function RichTextRender({
 
   const loadedExtensions = useMemo(
     () => [CredBuildRichText.configure(options), ...extensions],
-    [field, extensions]
+    [extensions, options]
   );
 
   const normalized: JSONContent = useMemo(() => {

@@ -15,7 +15,7 @@ import { DependencyList, useCallback } from "react";
  */
 export function useRenderedCallback<T extends Function>(
   callback: T,
-  deps: DependencyList
+  _deps: any[] = []
 ) {
   const manager = useDragDropManager();
 
@@ -25,6 +25,6 @@ export function useRenderedCallback<T extends Function>(
 
       return callback(...args);
     },
-    [...deps, manager]
+    [manager, callback]
   );
 }

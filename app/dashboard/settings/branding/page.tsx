@@ -139,12 +139,20 @@ export default function BrandingSettingsPage() {
                 description="Fine-tune the narrative and functional identifiers of your brand's voice."
             >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormSelect label="Primary Font" name="brandFontPrimary" value={settings.brandFontPrimary || "Inter"} onChange={handleChange}>
-                        {CURATED_FONTS.map(f => <option key={f.value} value={f.value}>{f.label}</option>)}
-                    </FormSelect>
-                    <FormSelect label="Secondary Font" name="brandFontSecondary" value={settings.brandFontSecondary || "Inter"} onChange={handleChange}>
-                        {CURATED_FONTS.map(f => <option key={f.value} value={f.value}>{f.label}</option>)}
-                    </FormSelect>
+                    <FormSelect 
+                        label="Primary Font" 
+                        name="brandFontPrimary" 
+                        value={settings.brandFontPrimary || "Inter"} 
+                        onChange={handleChange}
+                        options={CURATED_FONTS}
+                    />
+                    <FormSelect 
+                        label="Secondary Font" 
+                        name="brandFontSecondary" 
+                        value={settings.brandFontSecondary || "Inter"} 
+                        onChange={handleChange}
+                        options={CURATED_FONTS}
+                    />
                     <FormInput label="Footer Branding" name="brandFooterText" value={settings.brandFooterText || ""} onChange={handleChange} />
                     <FormInput label="Support Identifier" name="brandSupportEmail" value={settings.brandSupportEmail || ""} onChange={handleChange} />
                 </div>

@@ -68,7 +68,7 @@ export function useDragListener(
         [type]: [...(old[type] || []), fn],
       }));
     }
-  }, deps);
+  }, [type, fn, setDragListeners]);
 }
 
 type DeepestParams = {
@@ -106,7 +106,7 @@ const useTempDisableFallback = (timeout: number) => {
         manager.collisionObserver.forceUpdate(true);
       }
     }, timeout);
-  }, []);
+  }, [timeout]);
 };
 
 const DragDropContextClient = ({
@@ -214,7 +214,7 @@ const DragDropContextClient = ({
 
       debouncedParamsRef.current = null;
     },
-    [zoneStore]
+    [zoneStore, getChanged, tempDisableFallback]
   );
 
   const setDeepestDb = useDebouncedCallback(
@@ -237,7 +237,7 @@ const DragDropContextClient = ({
         )
       );
     }
-  }, []);
+  }, [zoneStore]);
 
   const [plugins] = useState(() => [
     ...(disableAutoScroll

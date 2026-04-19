@@ -142,10 +142,12 @@ export const useRegisterUseCredBuildStore = (
     return appStore.subscribe(
       (store) => convertToPickedStore(store),
       (pickedStore) => {
-        useCredBuildStore.setState(generateUseCredBuild(pickedStore, appStore.getState));
+        useCredBuildStore.setState(
+          generateUseCredBuild(pickedStore, appStore.getState)
+        );
       }
     );
-  }, []);
+  }, [appStore, useCredBuildStore]);
 
   return useCredBuildStore;
 };

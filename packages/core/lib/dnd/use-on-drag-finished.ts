@@ -3,7 +3,7 @@ import { useAppStoreApi } from "../../store";
 
 export const useOnDragFinished = (
   cb: (finished: boolean) => void,
-  deps: any[] = []
+  _deps: any[] = []
 ) => {
   const appStore = useAppStoreApi();
 
@@ -36,5 +36,5 @@ export const useOnDragFinished = (
     }
 
     return dispose;
-  }, [appStore, ...deps]);
+  }, [appStore, cb]);
 };

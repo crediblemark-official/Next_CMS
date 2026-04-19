@@ -101,7 +101,7 @@ export const useRegisterFieldsSlice = (
         }));
       }
     },
-    [id]
+    [id, appStore]
   );
 
   useEffect(() => {
@@ -111,5 +111,5 @@ export const useRegisterFieldsSlice = (
       (s) => s.state.indexes.nodes[id || "root"],
       () => resolveFields()
     );
-  }, [id]);
+  }, [id, appStore, resolveFields]);
 };

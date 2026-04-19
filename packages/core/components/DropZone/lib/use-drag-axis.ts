@@ -31,7 +31,7 @@ export const useDragAxis = (
         setDragAxis(DEFAULT_DRAG_AXIS);
       }
     }
-  }, [ref.current]);
+  }, [ref]);
 
   useEffect(() => {
     const onViewportChange = () => {
@@ -43,9 +43,9 @@ export const useDragAxis = (
     return () => {
       window.removeEventListener("viewportchange", onViewportChange);
     };
-  }, []);
+  }, [calculateDragAxis]);
 
-  useEffect(calculateDragAxis, [status, collisionAxis]);
+  useEffect(calculateDragAxis, [status, collisionAxis, calculateDragAxis]);
 
   return [dragAxis, calculateDragAxis];
 };

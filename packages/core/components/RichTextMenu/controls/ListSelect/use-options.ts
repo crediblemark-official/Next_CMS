@@ -10,11 +10,12 @@ const optionNodes: Record<string, { label: string; icon?: React.FC }> = {
 export type ListElement = "ol" | "ul";
 
 export const useListOptions = (fieldOptions: RichtextField["options"]) => {
-  let blockOptions: ListElement[] = [];
-
-  if (fieldOptions?.listItem !== false) {
-    blockOptions = ["ul", "ol"];
-  }
+  const blockOptions: ListElement[] = useMemo(() => {
+    if (fieldOptions?.listItem !== false) {
+      return ["ul", "ol"];
+    }
+    return [];
+  }, [fieldOptions?.listItem]);
 
   return useMemo(
     () =>

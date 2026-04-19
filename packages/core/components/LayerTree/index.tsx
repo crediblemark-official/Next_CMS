@@ -2,7 +2,7 @@ import styles from "./styles.module.css";
 import getClassNameFactory from "../../lib/get-class-name-factory";
 import { Config } from "../../types";
 import { ItemSelector } from "../../lib/data/get-item";
-import { ChevronDown, LayoutGrid, Layers, Type, LayoutTemplate, Megaphone, FileText, CreditCard, Box, Quote, Info, BarChart3, Image } from "lucide-react";
+import { ChevronDown, LayoutGrid, Layers, Type, LayoutTemplate, Megaphone, FileText, CreditCard, Box, Quote, Info, BarChart3, Image as ImageIcon } from "lucide-react";
 import { rootAreaId } from "../../lib/root-droppable-id";
 import {
   ForwardedRef,
@@ -221,7 +221,7 @@ const Layer = forwardRef(function Layer(
     if (t.includes("stats")) return <BarChart3 size="14" strokeWidth={2.5} />;
     if (t.includes("testimonials")) return <Quote size="14" strokeWidth={2.5} />;
     if (t.includes("about") || t.includes("info")) return <Info size="14" strokeWidth={2.5} />;
-    if (t.includes("gallery") || t.includes("image")) return <Image size="14" strokeWidth={2.5} />;
+    if (t.includes("gallery") || t.includes("image")) return <ImageIcon size="14" strokeWidth={2.5} />;
     if (t.includes("marketing") || t.includes("cta")) return <Megaphone size="14" strokeWidth={2.5} />;
     if (t.includes("content") || t.includes("blog")) return <FileText size="14" strokeWidth={2.5} />;
     if (t.includes("container") || t.includes("layout") || t.includes("flex")) return <Box size="14" strokeWidth={2.5} />;
